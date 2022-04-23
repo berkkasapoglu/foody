@@ -9,3 +9,12 @@
     font-family: 'Nunito', sans-serif;
   }
 }
+
+@layer components {
+  .input-base {
+    @apply w-full p-2 rounded-md bg-inherit border-input border-2;
+  }
+  .btn {
+    @apply py-2 px-5 bg-primary font-bold text-white rounded-md transition hover:bg-red-700
+  }
+}

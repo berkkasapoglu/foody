@@ -13,7 +13,7 @@ function Home() {
   }, [])
   return (
     <>
-      <header className="mt-12">
+      <header>
         <div className="flex justify-between items-center">
           <div className="flex items-center">
             <HeaderRecipe width={250} height={150} />

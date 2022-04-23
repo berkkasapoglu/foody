@@ -1,15 +1,31 @@
-const express = require("express")
 require("dotenv").config()
-const app = express()
+
+const express = require("express")
 const connectDb = require('./config/connectDb')
 const PORT = 5000
 
 connectDb()
+const app = express()
+
+app.use(express.urlencoded({extended: false}))
+app.use(express.json())
 
 app.use('/api/recipes', require('./routes/recipe'))
+app.use('/api/users', require('./routes/user'))
 
 app.get("/", (req, res) => {
   res.send("asdasddas")
+})
+
+app.use((err, req, res, next) => {
+  const { status = 500 } = err
+  if(!err.message) err.message = 'Something went wrong'
+  res.status(status).json({
+    success: false,
+    message: err.message,
+    stack: err.stack,
+    status: status
+  })
 })
 
 app.listen(PORT, () => {

@@ -1,7 +1,8 @@
 import SidebarItem from "./SidebarItem"
 import defaultProfile from "../assets/defaultProfile.png"
-import { GiCook, GiOpenBook, GiHearts  } from "react-icons/gi"
+import { GiCook, GiOpenBook, GiHearts } from "react-icons/gi"
 import { MdTrackChanges } from "react-icons/md"
+import { NavLink, Link } from "react-router-dom"
 
 function Sidebar() {
   return (
@@ -17,9 +18,46 @@ function Sidebar() {
         </span>
       </div>
       <div>
-        <SidebarItem icon={GiOpenBook} name={"Recipes"} />
-        <SidebarItem icon={GiHearts} name={"Favorites"} />
-        <SidebarItem icon={MdTrackChanges} name={"Meal Tracker"} />
+        <NavLink
+          to="/"
+          children={({ isActive }) =>
+            isActive ? (
+              <SidebarItem active={true} icon={GiOpenBook} name={"Recipes"} />
+            ) : (
+              <SidebarItem icon={GiOpenBook} name={"Recipes"} />
+            )
+          }
+        />
+        <NavLink
+          to="/favorites"
+          children={({ isActive }) =>
+            isActive ? (
+              <SidebarItem active={true} icon={GiHearts} name={"Favorites"} />
+            ) : (
+              <SidebarItem icon={GiHearts} name={"Favorites"} />
+            )
+          }
+        />
+
+        <NavLink
+          to="/tracker"
+          children={({ isActive }) =>
+            isActive ? (
+              <SidebarItem
+                active={true}
+                icon={MdTrackChanges}
+                name={"Meal Tracker"}
+              />
+            ) : (
+              <SidebarItem icon={MdTrackChanges} name={"Meal Tracker"} />
+            )
+          }
+        />
+      </div>
+      <div className="px-3 mb-5 text-center absolute bottom-0 w-full">
+        <Link to="/recipes/new" className="block mb-2 w-full py-2 px-5 bg-primary rounded-md text-body font-bold transition hover:bg-red-700">
+          Create Recipe
+        </Link>
       </div>
     </nav>
   )

@@ -1,4 +1,5 @@
 import { ReactComponent as HeaderRecipe } from "../assets/headerRecipe.svg"
+import { Link } from "react-router-dom"
 
 function CardItem({ recipe }) {
   return (
@@ -35,9 +36,9 @@ function CardItem({ recipe }) {
           <h3 className="pl-3">Dessert</h3>
         </div>
       </div>
-      <button className="absolute bottom-0 left-0 py-3 text-white font-bold bg-primary w-full rounded-b-lg">
+      <Link to={`/recipes/${recipe._id}`} className="absolute bottom-0 left-0 py-3 text-white font-bold bg-primary w-full rounded-b-lg">
         Start Cooking
-      </button>
+      </Link>
     </div>
   )
 }
