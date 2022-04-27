@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { ReactComponent as RegisterLogo } from "../assets/register.svg"
 import { register } from "../services/auth"
-
+import { useAuth } from "../context/authContext"
 
 function Register() {
   const navigate = useNavigate()
@@ -11,7 +11,7 @@ function Register() {
     email: "",
     password: "",
   })
-
+  const { setUser } = useAuth()
   const { username, email, password } = formData
 
   const onChange = (e) => {
@@ -23,9 +23,18 @@ function Register() {
 
   const onSubmit = async (e) => {
     e.preventDefault()
-    register(username, email, password)
-    navigate('/')
+    const res = await register(username, email, password)
+    if(res.success) {
+      setUser({
+        isAuthenticated: true,
+        username: res.data.username,
+        email: res.data.email,
+        token: res.data.token,
+      })
+      navigate('/')
+    }
   }
+
   return (
     <div className="lg:w-[60%] mx-auto">
       <h3 className="text-4xl font-bold mb-10">Welcome back</h3>

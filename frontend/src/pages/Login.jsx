@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { ReactComponent as LoginLogo } from "../assets/login.svg"
 import { useState } from "react"
 import { login } from "../services/auth"
+import { useAuth } from "../context/authContext"
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ function Login() {
     password: "",
   })
   const navigate = useNavigate()
+  const { setUser } = useAuth()
 
   const { username, password } = formData
   const onChange = (e) => {
@@ -20,9 +22,18 @@ function Login() {
 
   const onSubmit = async (e) => {
     e.preventDefault()
-    login(username, password)
-    navigate('/')
+    const res = await login(username, password)
+    if(res.success) {
+      setUser({
+        isAuthenticated: true,
+        token: res.data.token,
+        username: res.data.username,
+        email: res.data.email
+      })
+      navigate('/')
+    }
   }
+
   return (
     <div className="lg:w-[60%] mx-auto">
       <h3 className="text-4xl font-bold mb-10">Welcome back</h3>

@@ -1,3 +1,5 @@
+import jwt from "jwt-decode"
+
 const login = async (username, password) => {
   const res = await fetch('api/users/sign-in', {
     method: 'POST',
@@ -11,8 +13,9 @@ const login = async (username, password) => {
   })
   const userData = await res.json()
   if(userData.success) {
-    localStorage.setItem('user', JSON.stringify(userData.data))
+    localStorage.setItem('token', JSON.stringify(userData.data.token))
   }
+  return userData
 }
 
 const register = async (username, email, password) => {
@@ -29,14 +32,27 @@ const register = async (username, email, password) => {
   })
   const userData = await res.json()
   if(userData.success) {
-    localStorage.setItem('user', JSON.stringify(userData.data))
+    localStorage.setItem('token', JSON.stringify(userData.data.token))
   }
+  
+  return userData
 }
 
-const logout = () => localStorage.removeItem('user')
+const logout = () => localStorage.removeItem('token')
+
+const getAuthData = () => {
+  const token = JSON.parse(localStorage.getItem('token'))
+  try {
+    const { username } = jwt(token)
+    return { username, token }
+  } catch(e) {
+    return null
+  }
+}
 
 export {
   register,
   login,
-  logout
+  logout,
+  getAuthData
 }

@@ -1,10 +1,34 @@
 import FavoriteItem from "../components/FavoriteItem"
+import { useUser } from "../hooks/useUser"
+import DropContainer from "../components/DropContainer"
+import { useState, useEffect, useMemo } from "react"
+import {
+  CircularProgressbarWithChildren,
+  buildStyles,
+} from "react-circular-progressbar"
+import "react-circular-progressbar/dist/styles.css"
 
 function Favorites() {
-  return (
-    <div className="flex justify-between gap-6">
+  const { data: user, loading } = useUser()
+  const [favorites, setFavorites] = useState([])
+  const [totalCalories, setTotalCalories] = useState(0)
+
+  useEffect(() => {
+    if (!loading) {
+      const favoritesCopy = user.favorites.map((item) => ({
+        ...item,
+        count: 1,
+      }))
+      setFavorites(favoritesCopy)
+    }
+  }, [user, loading])
+
+  return loading ? (
+    <h3>Loading...</h3>
+  ) : (
+    <div className="flex justify-between">
       <div>
-        <div className="flex justify-between pb-1 border-b-2 border-primary">
+        <div className="flex justify-between pb-1 border-b-2 border-primary mb-5">
           <p className="font-bold">Filter</p>
           <div>
             <p className="text-gray-400">
@@ -12,25 +36,48 @@ function Favorites() {
             </p>
           </div>
         </div>
-        <FavoriteItem />
+        {favorites.map((favorite) => (
+          <FavoriteItem favorite={favorite} key={favorite._id} />
+        ))}
       </div>
-
-      <div>
+      <div className="basis-[28%]">
         <h3 className="text-xl font-bold">Make your day</h3>
         <p className="text-gray-400">21 June, 2020</p>
+
         <h3 className="font-bold my-2">Breakfast</h3>
-        <div className="bg-red-300 border-2 border-red-700 border-dashed text-red-700 font-bold px-8 py-3">
-          Drop Here to Add
-        </div>
+        <DropContainer
+          favorites={favorites}
+          setTotalCalories={setTotalCalories}
+          totalCalories={totalCalories}
+        />
         <h3 className="font-bold my-2">Lunch</h3>
-        <div className="bg-red-300 border-2 border-red-700 border-dashed text-red-700 font-bold px-8 py-3">
-          Drop Here to Add
-        </div>
+        <DropContainer
+          favorites={favorites}
+          setTotalCalories={setTotalCalories}
+          totalCalories={totalCalories}
+        />
         <h3 className="font-bold my-2">Dinner</h3>
-        <div className="bg-red-300 border-2 border-red-700 border-dashed text-red-700 font-bold px-8 py-3">
-          Drop Here to Add
+        <DropContainer
+          favorites={favorites}
+          setTotalCalories={setTotalCalories}
+          totalCalories={totalCalories}
+        />
+        <h3 className="text-xl font-bold mt-12 mb-4">Calorie Tracker</h3>
+        <div className="w-[200px] relative">
+          <CircularProgressbarWithChildren
+            value={totalCalories}
+            maxValue={2500}
+            styles={buildStyles({
+              textColor: "#ef4444",
+              pathColor: "#ef4444",
+            })}
+          >
+            <div className="font-bold text-primary text-center">
+              <p className="text-3xl">Kcal</p>
+              <h3 className="text-2xl text-black">{totalCalories}</h3>
+            </div>
+          </CircularProgressbarWithChildren>
         </div>
-        <h3 className="text-xl font-bold my-12">Calorie Tracker</h3>
       </div>
     </div>
   )

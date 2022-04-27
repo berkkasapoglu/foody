@@ -1,4 +1,4 @@
-import { useState, useRef } from "react"
+import { useState } from "react"
 import { BsTrash } from "react-icons/bs"
 import { MdOutlineAddBox } from "react-icons/md"
 function CreateRecipe() {

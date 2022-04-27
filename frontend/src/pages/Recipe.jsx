@@ -1,21 +1,47 @@
 import { useParams } from "react-router-dom"
 import { useEffect, useState } from "react"
 import headerRecipe from "../assets/headerRecipe.svg"
+import { useAuth } from "../context/authContext"
+import { useFetch } from "../hooks/useFetch"
+import { useUser } from "../hooks/useUser"
+
 function Recipe() {
-  const [recipe, setRecipe] = useState({})
-  const [loading, setLoading] = useState(true)
+  const [isFavorite, setIsFavorite] = useState(false)
+  const { auth } = useAuth()
   const { recipeId } = useParams()
-  
+  const { data: user } = useUser("/api/users/me")
+  const { data: recipe, loading} = useFetch(`/api/recipes/${recipeId}`)
   useEffect(() => {
-    const fetchRecipe = async () => {
-      const res = await fetch(`/api/recipes/${recipeId}`)
-      const recipeData = await res.json()
-      recipeData.success && setRecipe(recipeData.data)
-      setLoading(false)
+    setIsFavorite(user.favorites?.some(favorite => favorite._id === recipeId))
+  }, [user, recipeId])
+
+  const addToFavorites = async () => {
+    const res = await fetch(`/api/users/favorites/${recipeId}`, {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + auth.token,
+      },
+    })
+    const result = await res.json()
+    if (result.success) {
+      setIsFavorite(true)
     }
-    fetchRecipe()
-  }, [recipeId])
-  return loading ? (
+  }
+
+  const removeFromFavorites = async () => {
+    const res = await fetch(`/api/users/favorites/${recipeId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + auth.token,
+      },
+    })
+    const result = await res.json()
+    if (result.success) {
+      setIsFavorite(false)
+    }
+  }
+
+  return (loading) ? (
     <h3>Loading...</h3>
   ) : (
     <>
@@ -57,8 +83,11 @@ function Recipe() {
               {parseInt(recipe.calories)} kcal
             </p>
           </div>
-          {recipe.nutritions.map((item) => (
-            <div className=" text-center mr-5 p-1 bg-stone-300 inline-block mt-2 rounded-lg">
+          {recipe.nutritions.map((item, idx) => (
+            <div
+              key={idx}
+              className=" textpF-center mr-5 p-1 bg-stone-300 inline-block mt-2 rounded-lg"
+            >
               <p className="px-3">{item.label}</p>
               <p className="bg-body px-3 font-bold">{parseInt(item.total)} g</p>
             </div>
@@ -79,9 +108,21 @@ function Recipe() {
             ))}
           </ul>
         </div>
-        <button className="mt-5 bg-primary py-2 px-5 rounded-lg font-bold text-body transition-all hover:bg-red-700">
-          Add Favorites
-        </button>
+        {isFavorite ? (
+          <button
+            onClick={removeFromFavorites}
+            className="mt-5 bg-green-500 py-2 px-5 rounded-lg font-bold text-body transition-all hover:bg-green-600"
+          >
+            Added
+          </button>
+        ) : (
+          <button
+            onClick={addToFavorites}
+            className="mt-5 bg-primary py-2 px-5 rounded-lg font-bold text-body transition-all hover:bg-red-700"
+          >
+            Add Favorites
+          </button>
+        )}
       </main>
     </>
   )
