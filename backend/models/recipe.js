@@ -34,6 +34,7 @@ const recipeSchema = new Schema({
       unit: String,
     },
   ],
+  category: String
 })
 
 module.exports = mongoose.model("Recipe", recipeSchema)

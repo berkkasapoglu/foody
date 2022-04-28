@@ -1,7 +1,7 @@
 import FavoriteItem from "../components/FavoriteItem"
 import { useUser } from "../hooks/useUser"
 import DropContainer from "../components/DropContainer"
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect } from "react"
 import {
   CircularProgressbarWithChildren,
   buildStyles,
@@ -26,7 +26,7 @@ function Favorites() {
   return loading ? (
     <h3>Loading...</h3>
   ) : (
-    <div className="flex justify-between">
+    <div className="flex flex-col justify-between xl:flex-row">
       <div>
         <div className="flex justify-between pb-1 border-b-2 border-primary mb-5">
           <p className="font-bold">Filter</p>

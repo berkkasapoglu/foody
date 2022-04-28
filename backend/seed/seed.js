@@ -1,16 +1,17 @@
-require("dotenv").config()
+const path = require('path')
+require("dotenv").config(path.resolve(__dirname, "../../.env"))
 const connectDb = require("../config/connectDb")
 const axios = require("axios").default
 const Recipe = require("../models/recipe")
 
-const seedDb = async () => {
-  await connectDb()
+connectDb()
+
+const seedDb = async (category) => {
   try {
-    await Recipe.deleteMany({})
     const response = await axios.get(process.env.RECIPE_API_BASE_URL, {
       params: {
         type: "public",
-        q: "dessert",
+        q: category,
         app_id: process.env.RECIPE_API_ID,
         app_key: process.env.RECIPE_API_SECRET,
       },
@@ -50,6 +51,7 @@ const seedDb = async () => {
           calories: calories / yield,
           time: totalTime,
           nutritions: nutritions,
+          category: category
         })
         await recipe.save()
         console.log("Recipe data added to db.")
@@ -59,4 +61,9 @@ const seedDb = async () => {
   }
 }
 
-seedDb()
+const categories = ['Salad', 'Soup', 'Herbs', 'Fish', 'Burger', 'Noodle']
+
+for(category of categories) {
+  seedDb(category)
+}
+

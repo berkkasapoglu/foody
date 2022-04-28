@@ -8,7 +8,6 @@ import {
 import { GiWaterDrop, GiCurledLeaf, GiCrossedChains } from "react-icons/gi"
 import { Link } from "react-router-dom"
 import { useDrag } from "react-dnd"
-import { useAuth } from "../context/authContext"
 
 function FavoriteItem({
   favorite,
@@ -18,7 +17,6 @@ function FavoriteItem({
   increaseCount,
   decreaseCount,
 }) {
-  const { auth } = useAuth()
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "recipe",
     item: { id: favorite._id },
@@ -30,14 +28,14 @@ function FavoriteItem({
   const { title, calories, nutritions } = favorite
   const [fat, carbs, protein] = nutritions
 
-  const removeFromFavorites = async () => {
-    await fetch(`/api/users/favorites/${favorite._id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: "Bearer " + auth.token,
-      },
-    })
-  }
+  // const removeFromFavorites = async () => {
+  //   await fetch(`/api/users/favorites/${favorite._id}`, {
+  //     method: "DELETE",
+  //     headers: {
+  //       Authorization: "Bearer " + auth.token,
+  //     },
+  //   })
+  // }
 
   return (
     <div
@@ -97,7 +95,7 @@ function FavoriteItem({
           <>
             <Link
               to={`/recipes/${favorite._id}`}
-              className="rounded-md border-2 py-2 px-4 font-bold border-gray-300 transition hover:border-red-400"
+              className="rounded-md border-2 ml-4 py-2 px-4 font-bold border-gray-300 transition hover:border-red-400"
             >
               Info
             </Link>

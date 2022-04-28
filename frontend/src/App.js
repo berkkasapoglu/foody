@@ -25,6 +25,7 @@ function App() {
                 <DndProvider backend={HTML5Backend}>
                   <Routes>
                     <Route path="/" element={<Home />} />
+                    <Route path="category/:categoryName" element={<Home />} />
                     <Route path="/favorites" element={<Favorites />} />
                     <Route path="/tracker" element={<MealTracker />} />
                     <Route path="/recipes/:recipeId" element={<Recipe />} />

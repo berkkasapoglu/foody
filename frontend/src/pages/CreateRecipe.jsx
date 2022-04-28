@@ -66,7 +66,7 @@ function CreateRecipe() {
             List of Ingredients
           </h3>
           {ingredients.map((item, idx) => (
-            <div className="flex items-center">
+            <div className="flex items-center" key={idx}>
               <button
                 className="p-4"
                 onClick={() => handleRemoveIngredient(idx)}
@@ -77,6 +77,7 @@ function CreateRecipe() {
                 type="text"
                 id={idx}
                 name="ingredients"
+                value={ingredients[idx]}
                 onChange={(e) => handleIngredientChange(e, idx)}
                 placeholder="New Ingredient"
                 className="ml-2 w-full p-2 rounded-md bg-inherit border-input border-2"
