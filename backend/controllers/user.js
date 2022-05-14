@@ -54,22 +54,21 @@ const login = async (req, res, next) => {
   }
 }
 
-const addFavorite = async (req, res, next) => {
+const addToFavorites = async (req, res, next) => {
   const { recipeId } = req.params
   const userId = req.user._id
   const recipe = await Recipe.findById(recipeId)
   if (recipe) {
     await User.findByIdAndUpdate(userId, { $push: { favorites: recipe._id } })
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Recipe added successfully",
     })
-  } else {
-    next(new AppError(400, "Recipe does not exist"))
   }
+  next(new AppError(400, "Recipe does not exist"))
 }
 
-const removeFavorite = async (req, res, next) => {
+const removeFromFavorites = async (req, res, next) => {
   const { recipeId } = req.params
   const userId = req.user._id
   const recipe = await Recipe.findById(recipeId)
@@ -84,21 +83,44 @@ const removeFavorite = async (req, res, next) => {
   }
 }
 
-const getMe = async(req, res, next) => {
+const getMe = async (req, res, next) => {
   res.status(200).json({
     success: true,
-    data: req.user
+    data: req.user,
   })
 }
 
 const generateToken = (id, username) => {
-  return jwt.sign({ id, username }, process.env.JWT_SECRET, { expiresIn: "30d" })
+  return jwt.sign({ id, username }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+  })
 }
+
+const addToPlanner = async (req, res, next) => {
+  const id = req.user._id
+  const newPlan = req.body
+  newPlan.map(async (plan) => {
+    const result = await User.updateOne(
+      { id },
+      {
+        $push: { "planner.0.meals": plan.meals },
+      }
+    )
+    console.log(result)
+  })
+  return res.status(200).json({
+    success: true,
+    message: "Recipes added successfully to planner.",
+  })
+}
+
+const removeFromPlanner = () => {}
 
 module.exports = {
   register,
   login,
-  addFavorite,
-  removeFavorite,
-  getMe
+  addToFavorites,
+  removeFromFavorites,
+  getMe,
+  addToPlanner,
 }

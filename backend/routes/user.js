@@ -4,9 +4,10 @@ const catchAsync = require("../utils/catchAsync")
 const {
   register,
   login,
-  addFavorite,
-  removeFavorite,
+  addToFavorites,
+  removeFromFavorites,
   getMe,
+  addToPlanner,
 } = require("../controllers/user")
 const auth = require("../middlewares/auth")
 
@@ -16,10 +17,12 @@ router.post("/sign-in", catchAsync(login))
 
 router
   .route("/favorites/:recipeId")
-  .post(auth, catchAsync(addFavorite))
-  .delete(auth, catchAsync(removeFavorite))
+  .post(auth, catchAsync(addToFavorites))
+  .delete(auth, catchAsync(removeFromFavorites))
 
-router.post("/favorites/:recipeId", auth, catchAsync(addFavorite))
+router.post("/planner", auth, catchAsync(addToPlanner))
+
+router.post("/favorites/:recipeId", auth, catchAsync(addToFavorites))
 
 router.get("/me", auth, getMe)
 

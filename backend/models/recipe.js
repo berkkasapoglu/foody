@@ -34,7 +34,12 @@ const recipeSchema = new Schema({
       unit: String,
     },
   ],
-  category: String
+  category: String,
+  difficulty: {
+    type: String,
+    required: true,
+    enum: ['Hard', 'Intermediate', 'Easy']
+  }
 })
 
 module.exports = mongoose.model("Recipe", recipeSchema)

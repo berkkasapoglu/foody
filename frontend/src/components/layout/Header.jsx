@@ -4,11 +4,11 @@ import { logout } from "../../services/auth"
 import { useAuth } from "../../context/authContext"
 
 function Header() {
-  const { auth, setauth } = useAuth()
+  const { auth, setAuth } = useAuth()
 
   const handleLogout = () => {
     logout()
-    setauth({isAuthenticated: false})
+    setAuth({isAuthenticated: false})
   }
   return (
     

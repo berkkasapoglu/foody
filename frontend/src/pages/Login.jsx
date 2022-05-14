@@ -10,7 +10,7 @@ function Login() {
     password: "",
   })
   const navigate = useNavigate()
-  const { setUser } = useAuth()
+  const { setAuth } = useAuth()
 
   const { username, password } = formData
   const onChange = (e) => {
@@ -24,7 +24,7 @@ function Login() {
     e.preventDefault()
     const res = await login(username, password)
     if(res.success) {
-      setUser({
+      setAuth({
         isAuthenticated: true,
         token: res.data.token,
         username: res.data.username,

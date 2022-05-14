@@ -4,15 +4,16 @@ import headerRecipe from "../assets/headerRecipe.svg"
 import { useAuth } from "../context/authContext"
 import { useFetch } from "../hooks/useFetch"
 import { useUser } from "../hooks/useUser"
+import { toast } from "react-toastify"
 
 function Recipe() {
   const [isFavorite, setIsFavorite] = useState(false)
   const { auth } = useAuth()
   const { recipeId } = useParams()
-  const { data: user } = useUser("/api/users/me")
+  const { data: user, loading: userLoading } = useUser("/api/users/me")
   const { data: recipe, loading} = useFetch(`/api/recipes/${recipeId}`)
   useEffect(() => {
-    setIsFavorite(user.favorites?.some(favorite => favorite._id === recipeId))
+    user.favorites && setIsFavorite(user.favorites.some(favorite => favorite._id === recipeId))
   }, [user, recipeId])
 
   const addToFavorites = async () => {
@@ -25,6 +26,9 @@ function Recipe() {
     const result = await res.json()
     if (result.success) {
       setIsFavorite(true)
+      toast.success(result.message)
+    } else {
+      toast.error(result.message)
     }
   }
 
@@ -38,16 +42,17 @@ function Recipe() {
     const result = await res.json()
     if (result.success) {
       setIsFavorite(false)
+      toast.success(result.message)
     }
   }
 
   return (loading) ? (
     <h3>Loading...</h3>
-  ) : (
+  ) : (recipe) && (
     <>
       <main>
         <div className="lg:flex lg:items-center">
-          <img src={headerRecipe} alt="recipe" className="h-[250px]" />
+          <img src={recipe.image} alt="recipe" className="w-[350px] mr-10 rounded-xl" />
           <div className="pb-3 border-b-2 border-b-primary">
             <p className="text-primary text-sm font-bold">
               Chef: {recipe.source}

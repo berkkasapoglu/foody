@@ -4,7 +4,6 @@ const AuthContext = React.createContext()
 
 const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState({ isAuthenticated: false })
-  
   useEffect(() => {
     const authData = getAuthData()
     if (authData && authData.token) {

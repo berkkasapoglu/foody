@@ -3,11 +3,11 @@ import { useAuth } from "../context/authContext"
 
 export const useUser = () => {
   const [data, setData] = useState({})
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const { auth } = useAuth()
-
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true)
       const res = await fetch("/api/users/me", {
         headers: {
           authorization: "Bearer " + auth.token

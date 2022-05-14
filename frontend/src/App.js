@@ -2,7 +2,7 @@ import Sidebar from "./components/layout/Sidebar"
 import Home from "./pages/Home"
 import Search from "./components/layout/Header"
 import Favorites from "./pages/Favorites"
-import MealTracker from "./pages/MealTracker"
+import MealPlanner from "./pages/MealPlanner"
 import Recipe from "./pages/Recipe"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
@@ -11,6 +11,9 @@ import CreateRecipe from "./pages/CreateRecipe"
 import { AuthProvider } from "./context/authContext"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
+import { ToastContainer } from "react-toastify"
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function App() {
   return (
@@ -27,7 +30,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="category/:categoryName" element={<Home />} />
                     <Route path="/favorites" element={<Favorites />} />
-                    <Route path="/tracker" element={<MealTracker />} />
+                    <Route path="/tracker" element={<MealPlanner />} />
                     <Route path="/recipes/:recipeId" element={<Recipe />} />
                     <Route path="/recipes/new" element={<CreateRecipe />} />
                     <Route path="/sign-in" element={<Login />} />
@@ -38,6 +41,7 @@ function App() {
             </div>
           </div>
         </BrowserRouter>
+        <ToastContainer />
       </AuthProvider>
     </>
   )

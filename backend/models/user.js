@@ -16,10 +16,27 @@ const userSchema = new Schema({
     type: String,
     required: [true, "Please add a password"],
   },
-  favorites: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Recipe'
-  }]
+  favorites: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Recipe",
+    },
+  ],
+  planner: [
+    {
+      mealTime: {
+        type: String,
+        enum: ["breakfast", "lunch", "dinner"],
+      },
+      meals: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Recipe",
+        },
+      ],
+      day: Date,
+    },
+  ],
 })
 
 userSchema.pre("save", function (next) {
@@ -31,7 +48,8 @@ userSchema.pre("save", function (next) {
     .then((hashedPassword) => {
       this.password = hashedPassword
       next()
-    }).catch((next))
+    })
+    .catch(next)
 })
 
 module.exports = mongoose.model("User", userSchema)

@@ -7,14 +7,16 @@ import {
   buildStyles,
 } from "react-circular-progressbar"
 import "react-circular-progressbar/dist/styles.css"
+import Spinner from "../components/layout/Spinner"
+import { useLocalStorage } from "../hooks/useLocalStorage"
 
 function Favorites() {
   const { data: user, loading } = useUser()
   const [favorites, setFavorites] = useState([])
-  const [totalCalories, setTotalCalories] = useState(0)
-
+  const [trackerData, setTrackerData] = useLocalStorage('recipes', {})
+  const [totalCalories, setTotalCalories] = useLocalStorage('totalCalories', 0)
   useEffect(() => {
-    if (!loading) {
+    if (user.favorites) {
       const favoritesCopy = user.favorites.map((item) => ({
         ...item,
         count: 1,
@@ -24,10 +26,10 @@ function Favorites() {
   }, [user, loading])
 
   return loading ? (
-    <h3>Loading...</h3>
+    <Spinner />
   ) : (
-    <div className="flex flex-col justify-between xl:flex-row">
-      <div>
+    <div className="flex flex-col justify-between gap-12 xl:flex-row">
+      <div className="flex-1">
         <div className="flex justify-between pb-1 border-b-2 border-primary mb-5">
           <p className="font-bold">Filter</p>
           <div>
@@ -37,7 +39,7 @@ function Favorites() {
           </div>
         </div>
         {favorites.map((favorite) => (
-          <FavoriteItem favorite={favorite} key={favorite._id} />
+          <FavoriteItem favorite={favorite} key={favorite._id} setFavorites={setFavorites} favorites={favorites} />
         ))}
       </div>
       <div className="basis-[28%]">
@@ -49,18 +51,30 @@ function Favorites() {
           favorites={favorites}
           setTotalCalories={setTotalCalories}
           totalCalories={totalCalories}
+          name="breakfast"
+          trackerData={trackerData}
+          setTrackerData={setTrackerData}
+          loading={loading}
         />
         <h3 className="font-bold my-2">Lunch</h3>
         <DropContainer
           favorites={favorites}
           setTotalCalories={setTotalCalories}
           totalCalories={totalCalories}
+          name="lunch"
+          trackerData={trackerData}
+          setTrackerData={setTrackerData}
+          loading={loading}
         />
         <h3 className="font-bold my-2">Dinner</h3>
         <DropContainer
           favorites={favorites}
           setTotalCalories={setTotalCalories}
           totalCalories={totalCalories}
+          name="dinner"
+          trackerData={trackerData}
+          setTrackerData={setTrackerData}
+          loading={loading}
         />
         <h3 className="text-xl font-bold mt-12 mb-4">Calorie Tracker</h3>
         <div className="w-[200px] relative">
@@ -69,7 +83,7 @@ function Favorites() {
             maxValue={2500}
             styles={buildStyles({
               textColor: "#ef4444",
-              pathColor: "#ef4444",
+              pathColor: `rgba(219,53,41)`,
             })}
           >
             <div className="font-bold text-primary text-center">

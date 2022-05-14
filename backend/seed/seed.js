@@ -1,4 +1,4 @@
-const path = require('path')
+const path = require("path")
 require("dotenv").config(path.resolve(__dirname, "../../.env"))
 const connectDb = require("../config/connectDb")
 const axios = require("axios").default
@@ -8,6 +8,7 @@ connectDb()
 
 const seedDb = async (category) => {
   try {
+    await Recipe.deleteMany({})
     const response = await axios.get(process.env.RECIPE_API_BASE_URL, {
       params: {
         type: "public",
@@ -33,12 +34,12 @@ const seedDb = async (category) => {
           digest,
           totalTime,
         } = recipeItems.recipe
-  
+
         const nutritions = []
         for (let i = 0; i < 3; i++) {
           nutritions.push(digest[i])
         }
-  
+
         const recipe = new Recipe({
           title: label,
           image: image,
@@ -51,19 +52,30 @@ const seedDb = async (category) => {
           calories: calories / yield,
           time: totalTime,
           nutritions: nutritions,
-          category: category
+          category: category,
+          difficulty: decideDifficulty(ingredientLines.length)
         })
         await recipe.save()
         console.log("Recipe data added to db.")
-      })}
+      })
+    }
   } catch (e) {
     console.log(e)
   }
 }
 
-const categories = ['Salad', 'Soup', 'Herbs', 'Fish', 'Burger', 'Noodle']
-
-for(category of categories) {
-  seedDb(category)
+const decideDifficulty = (ingredientCount) => {
+  if(ingredientCount > 6) {
+    return 'Hard'
+  } else if(ingredientCount> 3) {
+    return 'Intermediate'
+  } else {
+    return 'Easy'
+  }
 }
 
+const categories = ["Salad", "Soup", "Herbs", "Fish", "Burger", "Noodle"]
+
+for (category of categories) {
+  seedDb(category)
+}

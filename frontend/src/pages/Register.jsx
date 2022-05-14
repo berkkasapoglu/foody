@@ -11,7 +11,7 @@ function Register() {
     email: "",
     password: "",
   })
-  const { setUser } = useAuth()
+  const { setAuth } = useAuth()
   const { username, email, password } = formData
 
   const onChange = (e) => {
@@ -25,7 +25,7 @@ function Register() {
     e.preventDefault()
     const res = await register(username, email, password)
     if(res.success) {
-      setUser({
+      setAuth({
         isAuthenticated: true,
         username: res.data.username,
         email: res.data.email,

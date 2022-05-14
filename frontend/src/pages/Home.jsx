@@ -1,25 +1,13 @@
 import { ReactComponent as HeaderRecipe } from "../assets/headerRecipe.svg"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import CardItem from "../components/CardItem"
 import CategoryFilter from "../components/filters/CategoryFilter"
 import Spinner from "../components/layout/Spinner"
+import { useFetch } from "../hooks/useFetch"
 
 function Home() {
-  const [recipes, setRecipes] = useState([])
-  const [loading, setLoading] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState("")
-  useEffect(() => {
-    const fetchRecipes = async () => {
-      setLoading(true)
-      const res = await fetch(
-        `/api/recipes/${selectedCategory && "/category/" + selectedCategory}`
-      )
-      const recipeData = await res.json()
-      if (recipeData.success) setRecipes(recipeData.data)
-      setLoading(false)
-    }
-    fetchRecipes()
-  }, [selectedCategory])
+  const { data: recipes, loading }  = useFetch(`/api/recipes/${selectedCategory && "category/" + selectedCategory}`, [])
   return (
     <>
       <header>
@@ -41,7 +29,7 @@ function Home() {
       {loading ? (
         <Spinner />
       ) : (
-        <main className="mt-12">
+        <main className="mt-24">
           <div className="flex flex-wrap gap-10 justify-between gap-y-16">
             {recipes.map((recipe) => (
               <CardItem key={recipe._id} recipe={recipe} />

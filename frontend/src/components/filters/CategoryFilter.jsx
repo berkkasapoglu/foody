@@ -6,6 +6,7 @@ import { ReactComponent as Herbs } from "../../assets/svg/herbs.svg"
 import { ReactComponent as Noodle } from "../../assets/svg/noodle.svg"
 import { ReactComponent as Salad } from "../../assets/svg/salad.svg"
 import { ReactComponent as Soup } from "../../assets/svg/soup.svg"
+import { ReactComponent as AllFoods } from "../../assets/svg/allFood.svg"
 
 function CategoryFilter({ setSelectedCategory }) {
   return (
@@ -15,7 +16,7 @@ function CategoryFilter({ setSelectedCategory }) {
         name="all"
         onClick={() => setSelectedCategory("")}
         children={({ isActive }) => (
-          <CategoryItem active={isActive} name="All" Logo={Burger} />
+          <CategoryItem active={isActive} name="All" Logo={AllFoods} />
         )}
       />
       <NavLink

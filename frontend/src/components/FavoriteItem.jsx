@@ -8,7 +8,9 @@ import {
 import { GiWaterDrop, GiCurledLeaf, GiCrossedChains } from "react-icons/gi"
 import { Link } from "react-router-dom"
 import { useDrag } from "react-dnd"
-
+import Recipe from "../pages/Recipe"
+import { useAuth } from "../context/authContext"
+import { toast } from "react-toastify"
 function FavoriteItem({
   favorite,
   dragged,
@@ -16,7 +18,11 @@ function FavoriteItem({
   size = "sm",
   increaseCount,
   decreaseCount,
+  setFavorites,
+  favorites,
 }) {
+  const { auth } = useAuth()
+
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "recipe",
     item: { id: favorite._id },
@@ -28,14 +34,21 @@ function FavoriteItem({
   const { title, calories, nutritions } = favorite
   const [fat, carbs, protein] = nutritions
 
-  // const removeFromFavorites = async () => {
-  //   await fetch(`/api/users/favorites/${favorite._id}`, {
-  //     method: "DELETE",
-  //     headers: {
-  //       Authorization: "Bearer " + auth.token,
-  //     },
-  //   })
-  // }
+  const removeFromFavorites = async () => {
+    const res = await fetch(`/api/users/favorites/${favorite._id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + auth.token,
+      },
+    })
+    const result = await res.json()
+    if (result.success) {
+      setFavorites(favorites.filter((item) => item._id !== favorite._id))
+      toast.success(result.message)
+    } else {
+      toast.error(result.message)
+    }
+  }
 
   return (
     <div
@@ -43,7 +56,12 @@ function FavoriteItem({
       className={`lg:flex justify-between items-center bg-white p-7 rounded-lg shadow-md mb-4 relative`}
     >
       <div className="flex mb-4">
-        <img src={headerRecipe} width={dragged ? 50 : 75} alt="recipe" />
+        <img
+          src={favorite.image}
+          width={dragged ? 50 : 75}
+          className="rounded-lg"
+          alt="recipe"
+        />
         <div className="ml-3">
           <h4 className={`font-bold text-${size}`}>{title}</h4>
           <div className={`text-${size} text-gray-500`}>
@@ -93,6 +111,10 @@ function FavoriteItem({
           </>
         ) : (
           <>
+            <AiOutlineClose
+              onClick={() => removeFromFavorites()}
+              className="cursor-pointer absolute top-0 right-0 translate-y-3 -translate-x-3 hover:text-primary"
+            />
             <Link
               to={`/recipes/${favorite._id}`}
               className="rounded-md border-2 ml-4 py-2 px-4 font-bold border-gray-300 transition hover:border-red-400"

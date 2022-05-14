@@ -2,8 +2,15 @@ import { useEffect, useRef, useState } from "react"
 import { useDrop } from "react-dnd"
 import FavoriteItem from "./FavoriteItem"
 
-function DropContainer({ favorites, totalCalories, setTotalCalories }) {
-  const [droppedItems, setDroppedItems] = useState([])
+function DropContainer({
+  favorites,
+  totalCalories,
+  setTotalCalories,
+  name,
+  trackerData,
+  setTrackerData,
+}) {
+  const [droppedItems, setDroppedItems] = useState(trackerData[name] || [])
   const [{ canDrop }, drop] = useDrop(
     () => ({
       accept: "recipe",
@@ -15,40 +22,50 @@ function DropContainer({ favorites, totalCalories, setTotalCalories }) {
     [favorites, totalCalories, droppedItems]
   )
 
+  useEffect(() => {
+    setTrackerData({
+      ...trackerData,
+      [name]: [...droppedItems]
+    })
+  }, [droppedItems])
+
   const addToDropContainer = (id) => {
-    const favoritesCopy = favorites.map((favorite) => ({...favorite}))
+    const favoritesCopy = favorites.map((favorite) => ({ ...favorite }))
     const item = favoritesCopy.filter((favorite) => favorite._id === id)
     const isExist = droppedItems.some((item) => item._id === id)
     if (!isExist) {
       setDroppedItems([...droppedItems, item[0]])
-      setTotalCalories(totalCalories + item[0].count * parseInt(item[0].calories))
+      setTotalCalories(
+        totalCalories + item[0].count * parseInt(item[0].calories)
+      )
     }
   }
 
   const removeFromDropContainer = (id) => {
     let removedItem
-    setDroppedItems(
-      droppedItems.filter((item) => {
-        if (item._id === id) removedItem = item
-        return item._id !== id
-      })
+    const newContainer = droppedItems.filter((item) => {
+      if (item._id === id) removedItem = item
+      return item._id !== id
+    })
+    setDroppedItems(newContainer)
+    setTotalCalories(
+      totalCalories - removedItem.count * parseInt(removedItem.calories)
     )
-    setTotalCalories(totalCalories - removedItem.count * parseInt(removedItem.calories))
   }
 
   const increaseCount = (id) => {
     const droppedItemsCopy = [...droppedItems]
-    const item = droppedItemsCopy.find(item => item._id === id)
-    item.count+=1
+    const item = droppedItemsCopy.find((item) => item._id === id)
+    item.count += 1
     setDroppedItems(droppedItemsCopy)
     setTotalCalories(totalCalories + parseInt(item.calories))
   }
 
   const decreaseCount = (id) => {
     const droppedItemsCopy = [...droppedItems]
-    const item = droppedItemsCopy.find(item => item._id === id)
-    if(item.count > 1) {
-      item.count-=1
+    const item = droppedItemsCopy.find((item) => item._id === id)
+    if (item.count > 1) {
+      item.count -= 1
       setDroppedItems(droppedItemsCopy)
     } else {
       setDroppedItems(droppedItemsCopy.filter((item) => item._id !== id))
