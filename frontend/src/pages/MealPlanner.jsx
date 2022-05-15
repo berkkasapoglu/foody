@@ -1,59 +1,47 @@
-import Calendar from "@toast-ui/react-calendar"
-import "tui-calendar/dist/tui-calendar.css"
-import 'tui-date-picker/dist/tui-date-picker.css';
-import 'tui-time-picker/dist/tui-time-picker.css';
-import { useState } from "react";
+import { useEffect, useState } from "react"
+import "react-big-calendar/lib/addons/dragAndDrop/styles.css"
+import "react-big-calendar/lib/css/react-big-calendar.css"
+import { Calendar, momentLocalizer } from "react-big-calendar"
+import moment from "moment"
+import { useUser } from "../hooks/useUser"
+const localizer = momentLocalizer(moment)
+
 function MealPlanner() {
-  const [recipes, setRecipes] = useState([])
+  const [meals, setMeals] = useState([])
+  const { data: user } = useUser()
+  useEffect(() => {
+    if (user.planner) {
+      getUserEvents()
+    }
+  }, [user])
+  const getUserEvents = () => {
+    const allEvents = []
+    for (let event of user.planner) {
+      console.log(event)
+      event.meals.map((item) => {
+        allEvents.push({
+          title: item.title,
+          start: moment(event.date).toDate(),
+          end: moment(event.date).toDate(),
+        })
+      })
+    }
+    setMeals(allEvents)
+  }
+  console.log(meals)
   return (
     <>
       <Calendar
-        view="month"
-        disableDblClick={true}
-        disableClick={false}
-        isReadOnly={false}
-        schedules={[
-          {
-            id: '1',
-            calendarId: '0',
-            title: 'TOAST UI Calendar Study',
-            category: 'allday',
-            dueDateClass: '',
-            start: new Date().toISOString(),
-            end: new Date().toISOString()
-
-          },
-          {
-            id: '1',
-            calendarId: '0',
-            title: 'TOAST UI Calendar Study',
-            category: 'allday',
-            dueDateClass: '',
-            start: new Date().toISOString(),
-            end: new Date().toISOString()
-
-          },
-          {
-            id: '1',
-            calendarId: '0',
-            title: 'TOAST UI Calendar Study',
-            category: 'allday',
-            dueDateClass: '',
-            start: new Date().toISOString(),
-            end: new Date().toISOString()
-
-          },
-          {
-            id: '1',
-            calendarId: '0',
-            title: 'TOAST UI Calendar Study',
-            category: 'allday',
-            dueDateClass: '',
-            start: new Date().toISOString(),
-            end: new Date().toISOString()
-          }
-        ]}
-        useDetailPopup={true}
+        defaultView="month"
+        localizer={localizer}
+        startAccessor="start"
+        endAccessor="end"
+        resizable
+        events={meals}
+        style={{ height: "70vh" }}
+        // views={{
+        //   month: true
+        // }}
       />
     </>
   )

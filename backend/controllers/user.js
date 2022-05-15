@@ -99,16 +99,21 @@ const generateToken = (id, username) => {
 const addToPlanner = async (req, res, next) => {
   const id = req.user._id
   const newPlan = req.body
-  newPlan.map(async (plan) => {
-    const result = await User.updateOne(
-      { id },
+  for (let plan of newPlan) {
+    await User.updateOne(
+      { _id: id, "planner.mealTime": plan.mealTime },
       {
-        $push: { "planner.0.meals": plan.meals },
+        $push: { "planner.$.meals": plan.meals },
+        "planner.$.day": plan.day,
       }
     )
-    console.log(result)
-  })
-  return res.status(200).json({
+    await User.updateOne(
+      { _id: id, "planner.mealTime": { $ne: plan.mealTime } },
+      { $push: { planner: plan } }
+    )
+  }
+
+  res.status(200).json({
     success: true,
     message: "Recipes added successfully to planner.",
   })

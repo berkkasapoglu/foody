@@ -56,12 +56,12 @@ function FavoriteItem({
       className={`lg:flex justify-between items-center bg-white p-7 rounded-lg shadow-md mb-4 relative`}
     >
       <div className="flex mb-4">
-        <img
+        {/* <img
           src={favorite.image}
           width={dragged ? 50 : 75}
           className="rounded-lg"
           alt="recipe"
-        />
+        /> */}
         <div className="ml-3">
           <h4 className={`font-bold text-${size}`}>{title}</h4>
           <div className={`text-${size} text-gray-500`}>

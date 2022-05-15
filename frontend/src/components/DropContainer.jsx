@@ -7,10 +7,10 @@ function DropContainer({
   totalCalories,
   setTotalCalories,
   name,
-  trackerData,
-  setTrackerData,
+  mealPlan,
+  setMealPlan,
 }) {
-  const [droppedItems, setDroppedItems] = useState(trackerData[name] || [])
+  const [droppedItems, setDroppedItems] = useState(mealPlan[name] || [])
   const [{ canDrop }, drop] = useDrop(
     () => ({
       accept: "recipe",
@@ -23,8 +23,8 @@ function DropContainer({
   )
 
   useEffect(() => {
-    setTrackerData({
-      ...trackerData,
+    setMealPlan({
+      ...mealPlan,
       [name]: [...droppedItems]
     })
   }, [droppedItems])

@@ -9,12 +9,15 @@ import {
 import "react-circular-progressbar/dist/styles.css"
 import Spinner from "../components/layout/Spinner"
 import { useLocalStorage } from "../hooks/useLocalStorage"
+import { useAuth } from "../context/authContext"
+import { toast } from "react-toastify"
 
 function Favorites() {
   const { data: user, loading } = useUser()
+  const { auth } = useAuth()
   const [favorites, setFavorites] = useState([])
-  const [trackerData, setTrackerData] = useLocalStorage('recipes', {})
-  const [totalCalories, setTotalCalories] = useLocalStorage('totalCalories', 0)
+  const [mealPlan, setMealPlan] = useLocalStorage("recipes", {})
+  const [totalCalories, setTotalCalories] = useLocalStorage("totalCalories", 0)
   useEffect(() => {
     if (user.favorites) {
       const favoritesCopy = user.favorites.map((item) => ({
@@ -24,6 +27,29 @@ function Favorites() {
       setFavorites(favoritesCopy)
     }
   }, [user, loading])
+
+  const addToPlan = async () => {
+    const organisedPlan = []
+    for (let key of Object.keys(mealPlan)) {
+      const plan = mealPlan[key]
+      plan.length &&
+        organisedPlan.push({
+          mealTime: key,
+          meals: plan.map((item) => ({ _id: item._id })),
+          day: new Date().toISOString(),
+        })
+    }
+    const res = await fetch("api/users/planner", {
+      method: "POST",
+      headers: {
+        authorization: "Bearer " + auth.token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(organisedPlan),
+    })
+    const result = await res.json()
+    result.success ? toast.success(result.message) : toast.error(result.message)
+  }
 
   return loading ? (
     <Spinner />
@@ -39,7 +65,12 @@ function Favorites() {
           </div>
         </div>
         {favorites.map((favorite) => (
-          <FavoriteItem favorite={favorite} key={favorite._id} setFavorites={setFavorites} favorites={favorites} />
+          <FavoriteItem
+            favorite={favorite}
+            key={favorite._id}
+            setFavorites={setFavorites}
+            favorites={favorites}
+          />
         ))}
       </div>
       <div className="basis-[28%]">
@@ -52,8 +83,8 @@ function Favorites() {
           setTotalCalories={setTotalCalories}
           totalCalories={totalCalories}
           name="breakfast"
-          trackerData={trackerData}
-          setTrackerData={setTrackerData}
+          mealPlan={mealPlan}
+          setMealPlan={setMealPlan}
           loading={loading}
         />
         <h3 className="font-bold my-2">Lunch</h3>
@@ -62,8 +93,8 @@ function Favorites() {
           setTotalCalories={setTotalCalories}
           totalCalories={totalCalories}
           name="lunch"
-          trackerData={trackerData}
-          setTrackerData={setTrackerData}
+          mealPlan={mealPlan}
+          setMealPlan={setMealPlan}
           loading={loading}
         />
         <h3 className="font-bold my-2">Dinner</h3>
@@ -72,10 +103,13 @@ function Favorites() {
           setTotalCalories={setTotalCalories}
           totalCalories={totalCalories}
           name="dinner"
-          trackerData={trackerData}
-          setTrackerData={setTrackerData}
+          mealPlan={mealPlan}
+          setMealPlan={setMealPlan}
           loading={loading}
         />
+        <button onClick={addToPlan} className="btn mt-5 block ml-auto">
+          Add Recipes to Plan
+        </button>
         <h3 className="text-xl font-bold mt-12 mb-4">Calorie Tracker</h3>
         <div className="w-[200px] relative">
           <CircularProgressbarWithChildren

@@ -1,6 +1,6 @@
-const AppError = require('../utils/AppError')
-const jwt = require('jsonwebtoken')
-const User = require('../models/user')
+const AppError = require("../utils/AppError")
+const jwt = require("jsonwebtoken")
+const User = require("../models/user")
 
 const auth = async (req, res, next) => {
   let token
@@ -9,15 +9,18 @@ const auth = async (req, res, next) => {
     if (auth && auth.startsWith("Bearer")) {
       token = auth.split(" ")[1]
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
-      req.user = await User.findById(decoded.id).populate('favorites')
+      req.user = await User.findById(decoded.id)
+        .select("-password")
+        .populate("favorites")
+        .populate("planner.meals")
       next()
     }
-  } catch(e) {
-    next(new AppError(401, 'Not Authorized'))
+  } catch (e) {
+    next(new AppError(401, "Not Authorized"))
   }
-  
-  if(!token) {
-    next(new AppError(401, 'Not Authorized'))
+
+  if (!token) {
+    next(new AppError(401, "Not Authorized"))
   }
 }
 
