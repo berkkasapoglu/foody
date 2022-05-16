@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema
+
 const recipeSchema = new Schema({
   title: {
     type: String,
@@ -22,6 +23,7 @@ const recipeSchema = new Schema({
   calories: {
     type: Number,
     required: true,
+    set: v => Math.round(v)
   },
   time: {
     type: Number,
@@ -30,7 +32,10 @@ const recipeSchema = new Schema({
   nutritions: [
     {
       label: String,
-      total: Number,
+      total: {
+        type: Number,
+        set: v => Math.round(v)
+      },
       unit: String,
     },
   ],

@@ -2,6 +2,7 @@ import FavoriteItem from "../components/FavoriteItem"
 import { useUser } from "../hooks/useUser"
 import DropContainer from "../components/DropContainer"
 import { useState, useEffect } from "react"
+import moment from "moment"
 import {
   CircularProgressbarWithChildren,
   buildStyles,
@@ -18,6 +19,7 @@ function Favorites() {
   const [favorites, setFavorites] = useState([])
   const [mealPlan, setMealPlan] = useLocalStorage("recipes", {})
   const [totalCalories, setTotalCalories] = useLocalStorage("totalCalories", 0)
+
   useEffect(() => {
     if (user.favorites) {
       const favoritesCopy = user.favorites.map((item) => ({
@@ -29,23 +31,27 @@ function Favorites() {
   }, [user, loading])
 
   const addToPlan = async () => {
-    const organisedPlan = []
-    for (let key of Object.keys(mealPlan)) {
-      const plan = mealPlan[key]
-      plan.length &&
-        organisedPlan.push({
-          mealTime: key,
-          meals: plan.map((item) => ({ _id: item._id })),
-          day: new Date().toISOString(),
-        })
+    const organizedPlan = {
+      day: moment().format("YYYY MM DD"),
+      meals: []
     }
+    for(let key of Object.keys(mealPlan)) {
+      const meals = mealPlan[key]
+      for(let meal of meals) {
+        organizedPlan.meals.push({
+          mealTime: key,
+          meal: meal._id
+        })
+      }
+    }
+
     const res = await fetch("api/users/planner", {
       method: "POST",
       headers: {
         authorization: "Bearer " + auth.token,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(organisedPlan),
+      body: JSON.stringify([organizedPlan]),
     })
     const result = await res.json()
     result.success ? toast.success(result.message) : toast.error(result.message)

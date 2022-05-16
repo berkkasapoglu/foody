@@ -85,7 +85,7 @@ function Recipe() {
           <div className=" text-center mr-5 p-1 bg-stone-300 inline-block mt-2 rounded-lg">
             <p className="px-3">Calories</p>
             <p className="bg-body px-3 font-bold">
-              {parseInt(recipe.calories)} kcal
+              {recipe.calories} kcal
             </p>
           </div>
           {recipe.nutritions.map((item, idx) => (
@@ -94,7 +94,7 @@ function Recipe() {
               className=" textpF-center mr-5 p-1 bg-stone-300 inline-block mt-2 rounded-lg"
             >
               <p className="px-3">{item.label}</p>
-              <p className="bg-body px-3 font-bold">{parseInt(item.total)} g</p>
+              <p className="bg-body px-3 font-bold">{item.total} g</p>
             </div>
           ))}
         </div>

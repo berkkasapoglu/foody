@@ -2,19 +2,24 @@ const mongoose = require("mongoose")
 const Schema = mongoose.Schema
 const bcrypt = require("bcryptjs")
 
-const plannerSchema = new Schema({
-  mealTime: {
-    type: String,
-    enum: ["breakfast", "lunch", "dinner"],
+const plannerSchema = new Schema(
+  {
+    day: Date,
+    meals: [
+      {
+        mealTime: {
+          type: String,
+          enum: ["breakfast", "lunch", "dinner"],
+        },
+        meal: {
+          type: Schema.Types.ObjectId,
+          ref: "Recipe",
+        },
+      },
+    ],
   },
-  meals: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Recipe",
-    },
-  ],
-  day: Date,
-}, { _id: false })
+  { _id: false }
+)
 
 const userSchema = new Schema({
   username: {
@@ -36,8 +41,7 @@ const userSchema = new Schema({
       ref: "Recipe",
     },
   ],
-  planner: [plannerSchema]
-  
+  planner: [plannerSchema],
 })
 
 userSchema.pre("save", function (next) {

@@ -16,7 +16,7 @@ function CardItem({ recipe }) {
           <img
             src={recipe.image}
             alt="recipe"
-            className="w-[75px] h-[75px] absolute -top-2 left-20 translate-x-1/2 -translate-y-1/2 rounded-[50%]"
+            className="w-[75px] h-[75px] absolute left-0 right-0 mx-auto block top-0 -translate-y-[50%] rounded-full"
           />
         ) : (
           <HeaderRecipe
@@ -25,7 +25,7 @@ function CardItem({ recipe }) {
             className="absolute -top-2 left-4 translate-x-1/2 -translate-y-1/2"
           />
         )}
-        <h3 className="font-bold mb-2">{recipe.title}</h3>
+        <h3 className="font-bold mb-2 mt-3">{recipe.title}</h3>
         <div className="mb-5">
           <span className={`${difficultyColor[recipe.difficulty]} text-sm bg-red-500 rounded-lg px-4 text-white font-bold`}>
             {recipe.difficulty}

@@ -99,18 +99,15 @@ const generateToken = (id, username) => {
 const addToPlanner = async (req, res, next) => {
   const id = req.user._id
   const newPlan = req.body
-  for (let plan of newPlan) {
-    await User.updateOne(
-      { _id: id, "planner.mealTime": plan.mealTime },
-      {
-        $push: { "planner.$.meals": plan.meals },
-        "planner.$.day": plan.day,
-      }
-    )
-    await User.updateOne(
-      { _id: id, "planner.mealTime": { $ne: plan.mealTime } },
-      { $push: { planner: plan } }
-    )
+
+  for(let dailyPlan of newPlan) {
+    await User.updateOne({_id: id, "planner.day":  new Date(dailyPlan.day) }, {
+      $push: { "planner.$.meals": dailyPlan.meals }
+    })
+  
+    await User.updateOne({ _id: id, "planner.day": { $ne: new Date(dailyPlan.day) } }, {
+      $push: { planner: dailyPlan }
+    })
   }
 
   res.status(200).json({

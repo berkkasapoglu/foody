@@ -16,6 +16,8 @@ module.exports = {
         label: 'rgb(234 104 126)'
       }
     },
+
+    safelist: ['bg-[#1ABC9C]']
   },
   plugins: [],
 }

@@ -49,7 +49,7 @@ const seedDb = async (category) => {
             healthLabels: healthLabels,
           },
           ingredients: ingredientLines,
-          calories: calories / yield,
+          calories: parseInt(calories / yield),
           time: totalTime,
           nutritions: nutritions,
           category: category,

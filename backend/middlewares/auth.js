@@ -12,7 +12,7 @@ const auth = async (req, res, next) => {
       req.user = await User.findById(decoded.id)
         .select("-password")
         .populate("favorites")
-        .populate("planner.meals")
+        .populate("planner.meals.meal")
       next()
     }
   } catch (e) {
