@@ -1,7 +1,6 @@
 import { CircularProgressbarWithChildren, buildStyles } from "react-circular-progressbar"
 
 function SummaryCard({stat, unit, max=2500, pathColor, textColor, title}) {
-  console.log(pathColor)
   return (
     <div className="bg-white rounded-lg shadow-transparent p-6">
       <h3 className="font-bold text-lg mb-3 text-center">{title}</h3>

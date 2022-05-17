@@ -43,8 +43,8 @@ const logout = () => localStorage.removeItem('token')
 const getAuthData = () => {
   const token = JSON.parse(localStorage.getItem('token'))
   try {
-    const { username } = jwt(token)
-    return { username, token }
+    const { username, email } = jwt(token)
+    return { username, email, token }
   } catch(e) {
     return null
   }

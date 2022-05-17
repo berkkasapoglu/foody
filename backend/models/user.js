@@ -42,6 +42,12 @@ const userSchema = new Schema({
     },
   ],
   planner: [plannerSchema],
+  personalInformation: {
+    weight: Number,
+    height: Number,
+    age: Number,
+    gender: String
+  }
 })
 
 userSchema.pre("save", function (next) {

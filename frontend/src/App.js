@@ -6,6 +6,7 @@ import MealPlanner from "./pages/MealPlanner"
 import Recipe from "./pages/Recipe"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
+import Profile from "./pages/Profile"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import CreateRecipe from "./pages/CreateRecipe"
 import { AuthProvider } from "./context/authContext"
@@ -35,6 +36,7 @@ function App() {
                     <Route path="/recipes/new" element={<CreateRecipe />} />
                     <Route path="/sign-in" element={<Login />} />
                     <Route path="/sign-up" element={<Register />} />
+                    <Route path="/profile" element={<Profile />} />
                   </Routes>
                 </DndProvider>
               </div>

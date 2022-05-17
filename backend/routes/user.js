@@ -8,10 +8,13 @@ const {
   removeFromFavorites,
   getMe,
   addToPlanner,
+  updatePersonalInformation
 } = require("../controllers/user")
 const auth = require("../middlewares/auth")
 
-router.post("/", catchAsync(register))
+router.route("/")
+  .post(catchAsync(register))
+  .patch(auth, catchAsync(updatePersonalInformation))
 
 router.post("/sign-in", catchAsync(login))
 

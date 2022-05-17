@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { useAuth } from "../context/authContext"
 
 export const useUser = () => {
-  const [data, setData] = useState({})
+  const [data, setData] = useState(null)
   const [loading, setLoading] = useState(false)
   const { auth } = useAuth()
   useEffect(() => {

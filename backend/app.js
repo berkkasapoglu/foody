@@ -13,10 +13,6 @@ app.use(express.json())
 app.use('/api/recipes', require('./routes/recipe'))
 app.use('/api/users', require('./routes/user'))
 
-app.get("/", (req, res) => {
-  res.send("asdasddas")
-})
-
 app.use((err, req, res, next) => {
   const { status = 500 } = err
   if(!err.message) err.message = 'Something went wrong'

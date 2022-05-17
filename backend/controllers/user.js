@@ -29,7 +29,7 @@ const register = async (req, res, next) => {
       data: {
         username: newUser.username,
         email: newUser.email,
-        token: generateToken(newUser._id, newUser.username),
+        token: generateToken(newUser._id, newUser.username, newUser.email),
       },
     })
   } else {
@@ -46,12 +46,18 @@ const login = async (req, res, next) => {
       data: {
         username: user.username,
         email: user.email,
-        token: generateToken(user._id, user.username),
+        token: generateToken(user._id, user.username, user.email),
       },
     })
   } else {
     next(new AppError(401, "Username or password is wrong"))
   }
+}
+
+const generateToken = (id, username, email) => {
+  return jwt.sign({ id, username, email }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+  })
 }
 
 const addToFavorites = async (req, res, next) => {
@@ -90,24 +96,24 @@ const getMe = async (req, res, next) => {
   })
 }
 
-const generateToken = (id, username) => {
-  return jwt.sign({ id, username }, process.env.JWT_SECRET, {
-    expiresIn: "30d",
-  })
-}
-
 const addToPlanner = async (req, res, next) => {
   const id = req.user._id
   const newPlan = req.body
 
-  for(let dailyPlan of newPlan) {
-    await User.updateOne({_id: id, "planner.day":  new Date(dailyPlan.day) }, {
-      $push: { "planner.$.meals": dailyPlan.meals }
-    })
-  
-    await User.updateOne({ _id: id, "planner.day": { $ne: new Date(dailyPlan.day) } }, {
-      $push: { planner: dailyPlan }
-    })
+  for (let dailyPlan of newPlan) {
+    await User.updateOne(
+      { _id: id, "planner.day": new Date(dailyPlan.day) },
+      {
+        $push: { "planner.$.meals": dailyPlan.meals },
+      }
+    )
+
+    await User.updateOne(
+      { _id: id, "planner.day": { $ne: new Date(dailyPlan.day) } },
+      {
+        $push: { planner: dailyPlan },
+      }
+    )
   }
 
   res.status(200).json({
@@ -118,6 +124,24 @@ const addToPlanner = async (req, res, next) => {
 
 const removeFromPlanner = () => {}
 
+const updatePersonalInformation = async (req, res, next) => {
+  const { id } = req.user
+  const { gender, weight } = req.body
+  await User.findByIdAndUpdate(id, {
+    $set: {
+      personalInformation: {
+        gender: gender,
+        weight: weight
+      },
+    }
+    
+  })
+  res.status(200).json({
+    success: true,
+    message: "Updated successfully.",
+  })
+}
+
 module.exports = {
   register,
   login,
@@ -125,4 +149,5 @@ module.exports = {
   removeFromFavorites,
   getMe,
   addToPlanner,
+  updatePersonalInformation,
 }
