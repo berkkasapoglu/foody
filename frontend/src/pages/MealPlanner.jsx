@@ -6,6 +6,8 @@ import moment from "moment"
 import { useUser } from "../hooks/useUser"
 import CalendarPopOver from "../components/planner/CalendarPopOver"
 import SummaryCard from "../components/planner/SummaryCard"
+import LineBar from "../components/planner/LineBar"
+import CircleBar from "../components/planner/CircleBar"
 const localizer = momentLocalizer(moment)
 
 const mealTimeStyle = {
@@ -15,12 +17,13 @@ const mealTimeStyle = {
   other: "#E74C3C",
 }
 
-const calculateWeeklyStats = (weeklyMeals) => {
+const calculateWeeklyStats = (weeklyMeals, personalInformation) => {
   const stats = {
     totalCalorieTaken: 0,
     totalFatTaken: 0,
     totalCarbTaken: 0,
     totalProteinTaken: 0,
+    BMI: 0,
   }
   weeklyMeals.length &&
     weeklyMeals.map((mealData) => {
@@ -29,19 +32,32 @@ const calculateWeeklyStats = (weeklyMeals) => {
       stats.totalCarbTaken += mealData.meal.nutritions[1].total
       stats.totalProteinTaken += mealData.meal.nutritions[2].total
     })
+  if (personalInformation) {
+    const { height, weight } = personalInformation
+    if (height && weight) {
+      stats.BMI = (weight / Math.pow(height / 100, 2)).toFixed(2)
+    } else {
+      stats.BMI = 23.0
+    }
+  }
+  const needs = calculateNeeds(personalInformation)
+  stats.needs = needs || {}
   return stats
 }
-
 function MealPlanner() {
   const [meals, setMeals] = useState([])
-  const { data: user } = useUser()
-
+  const { data: user } = useUser({})
   useEffect(() => {
-    if (user.planner) {
+    if (user && user.planner) {
       getUserEvents()
     }
   }, [user])
-  const mealStats = useMemo(() => calculateWeeklyStats(meals), [meals])
+
+  const weeklyStats = useMemo(
+    () => calculateWeeklyStats(meals, user.personalInformation),
+    [meals, user.personalInformation]
+  )
+
   const eventPropGetter = (event, start, end, isSelected) => {
     const style = {
       backgroundColor: mealTimeStyle[event.mealTime],
@@ -50,6 +66,7 @@ function MealPlanner() {
       style: style,
     }
   }
+
   const getUserEvents = () => {
     const allEvents = []
     for (let dailyPlan of user.planner) {
@@ -69,7 +86,6 @@ function MealPlanner() {
     }
     setMeals(allEvents)
   }
-
   return (
     <div>
       <Calendar
@@ -101,13 +117,95 @@ function MealPlanner() {
           <h3 className="font-bold">Other</h3>
         </div>
       </div>
+      {
+        
+      }
       <h3 className="text-2xl font-bold my-5">Weekly Summary</h3>
-      <div className="flex gap-5">
-        <SummaryCard stat={mealStats.totalCalorieTaken} unit="Kcal" textColor="#ef4444" pathColor="rgba(219,53,41)" title={"Calorie Taken"}/>
-        <SummaryCard stat={11.7} unit="BMI" max={25} title="Body Mass Index (BMI)" />
-        <SummaryCard stat={11.7} unit="BMI" max={25} title="Nutrient Ratios" />
+      <div className="flex justify-between gap-5 flex-wrap">
+        <SummaryCard title="Total Calorie Taken">
+          <CircleBar
+            stat={weeklyStats.totalCalorieTaken}
+            text="Kcal"
+            barColor="rgba(219,53,41)"
+            max={weeklyStats.needs.calorie}
+          />
+        </SummaryCard>
+        <SummaryCard title="Body Mass Index">
+          <CircleBar
+            stat={weeklyStats.BMI}
+            checkResult={checkBMI(weeklyStats.BMI)}
+            text="BMI"
+            barColor={mealTimeStyle.breakfast}
+            max={50}
+          />
+        </SummaryCard>
+        <div className="flex-1">
+          <SummaryCard title="Nutritions">
+            <div className="flex gap-2">
+              <h3 className="font-bold min-w-[110px]">Protein</h3>
+              <LineBar
+                stat={weeklyStats.totalProteinTaken}
+                max={weeklyStats.needs.protein}
+                barColor={mealTimeStyle.breakfast}
+              />
+            </div>
+            <div className="flex gap-2">
+              <h3 className="font-bold min-w-[110px]">Carbohydrate</h3>
+              <LineBar
+                stat={weeklyStats.totalCarbTaken}
+                max={weeklyStats.needs.carb}
+                barColor={mealTimeStyle.lunch}
+              />
+            </div>
+            <div className="flex gap-2">
+              <h3 className="font-bold min-w-[110px]">Fat</h3>
+              <LineBar
+                stat={weeklyStats.totalFatTaken}
+                max={weeklyStats.needs.fat}
+                barColor={mealTimeStyle.dinner}
+              />
+            </div>
+          </SummaryCard>
+        </div>
       </div>
     </div>
   )
 }
+
+const calculateNeeds = (personalInformation) => {
+  if (personalInformation) {
+    const { weight, height, age, gender } = personalInformation
+    if (!weight || !height || !age || !gender) return
+    const needs = {}
+    if (gender === "Male") {
+      needs.calorie = (66.5 + 13.8 * weight + 5.0 * height - 6.8 * age) * 7
+    } else if (gender === "Female") {
+      needs.calorie = (655.1 + 9.6 * weight + 1.9 * height - 4.7 * age) * 7
+    }
+    needs.carb = parseInt(needs.calorie * 0.55 * 0.13) * 7
+    needs.fat = parseInt(needs.calorie * 0.30 * 0.13) * 7
+    needs.protein = parseInt(needs.calorie * 0.25 * 0.13) * 7
+    return needs
+  }
+}
+
+const checkBMI = (BMIValue) => {
+  let BMIResult
+  switch (true) {
+    case BMIValue < 18.5:
+      BMIResult = { status: "Underweight", color: "text-blue-400" }
+      break
+    case BMIValue < 24.9:
+      BMIResult = { status: "Normalweight", color: "text-green-500" }
+      break
+    case BMIValue < 29.9:
+      BMIResult = { status: "Overweight", color: "text-orange-500" }
+      break
+    default:
+      BMIResult = { status: "Obesity", color: "text-red-500" }
+      break
+  }
+  return BMIResult
+}
+
 export default MealPlanner

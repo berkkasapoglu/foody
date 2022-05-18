@@ -14,8 +14,13 @@ import { toast } from "react-toastify"
 function Profile() {
   const { auth } = useAuth()
   const { data: user, setData: setUser } = useUser()
-  const [personalData, setPersonalData] = useState({})
+  const [personalData, setPersonalData] = useState({
+    weight: "",
+    height: "",
+    age: "",
+  })
   const [isChangeMode, setIsChangeMode] = useState(false)
+
   useEffect(() => {
     if (user && user.personalInformation) {
       setPersonalData(user.personalInformation)
@@ -37,13 +42,11 @@ function Profile() {
         !user.personalInformation ||
         user.personalInformation[key] !== personalData[key]
       ) {
-        console.log(user.personalInformation[key], personalData[key])
         changed = true
         updates[key] = personalData[key]
       }
     }
     if (changed) {
-      console.log(updates)
       const res = await fetch("/api/users", {
         method: "PATCH",
         headers: {
@@ -59,6 +62,7 @@ function Profile() {
         setUser({
           ...user,
           personalInformation: {
+            ...personalData,
             ...updates,
           },
         })
@@ -67,7 +71,6 @@ function Profile() {
       }
     }
   }
-
   if (!user) return <Spinner />
   return (
     <>
@@ -122,7 +125,7 @@ function Profile() {
                 } bg-transparent md:w-[60%]`}
                 placeholder="kg"
                 disabled={!isChangeMode}
-                value={personalData.weight}
+                value={`${personalData.weight}${!isChangeMode ? " kg" : ""}`}
                 name="weight"
                 onChange={onChange}
               />
@@ -130,13 +133,13 @@ function Profile() {
             <h4 className="mt-3 mb-1 text-sm font-bold ">Height</h4>
             <div>
               <input
-                type="number"
+                type={isChangeMode ? "number" : "text"}
                 className={`${
                   isChangeMode && "input-base"
                 } bg-transparent md:w-[60%]`}
                 placeholder="cm"
                 disabled={!isChangeMode}
-                value={personalData.height}
+                value={`${personalData.height}${!isChangeMode ? " cm" : ""}`}
                 name="height"
                 onChange={onChange}
               />

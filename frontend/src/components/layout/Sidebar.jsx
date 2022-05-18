@@ -52,10 +52,10 @@ function Sidebar() {
               <SidebarItem
                 active={true}
                 icon={MdTrackChanges}
-                name={"Meal Tracker"}
+                name={"Meal Planner"}
               />
             ) : (
-              <SidebarItem icon={MdTrackChanges} name={"Meal Tracker"} />
+              <SidebarItem icon={MdTrackChanges} name={"Meal Planner"} />
             )
           }
         />

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react"
 import { useAuth } from "../context/authContext"
 
-export const useUser = () => {
-  const [data, setData] = useState(null)
+export const useUser = (initialValue=null) => {
+  const [data, setData] = useState(initialValue)
   const [loading, setLoading] = useState(false)
   const { auth } = useAuth()
   useEffect(() => {

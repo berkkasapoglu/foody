@@ -10,10 +10,12 @@ function Recipe() {
   const [isFavorite, setIsFavorite] = useState(false)
   const { auth } = useAuth()
   const { recipeId } = useParams()
-  const { data: user, loading: userLoading } = useUser("/api/users/me")
+  const { data: user, loading: userLoading } = useUser()
   const { data: recipe, loading} = useFetch(`/api/recipes/${recipeId}`)
   useEffect(() => {
-    user.favorites && setIsFavorite(user.favorites.some(favorite => favorite._id === recipeId))
+    if(user) {
+      setIsFavorite(user.favorites.some(favorite => favorite._id === recipeId))
+    }
   }, [user, recipeId])
 
   const addToFavorites = async () => {

@@ -21,7 +21,7 @@ function Favorites() {
   const [totalCalories, setTotalCalories] = useLocalStorage("totalCalories", 0)
 
   useEffect(() => {
-    if (user.favorites) {
+    if (user) {
       const favoritesCopy = user.favorites.map((item) => ({
         ...item,
         count: 1,
@@ -33,14 +33,14 @@ function Favorites() {
   const addToPlan = async () => {
     const organizedPlan = {
       day: moment().format("YYYY MM DD"),
-      meals: []
+      meals: [],
     }
-    for(let key of Object.keys(mealPlan)) {
+    for (let key of Object.keys(mealPlan)) {
       const meals = mealPlan[key]
-      for(let meal of meals) {
+      for (let meal of meals) {
         organizedPlan.meals.push({
           mealTime: key,
-          meal: meal._id
+          meal: meal._id,
         })
       }
     }
