@@ -5,6 +5,7 @@ import { useAuth } from "../context/authContext"
 import { useFetch } from "../hooks/useFetch"
 import { useUser } from "../hooks/useUser"
 import { toast } from "react-toastify"
+import Spinner from "../components/layout/Spinner"
 
 function Recipe() {
   const [isFavorite, setIsFavorite] = useState(false)
@@ -49,7 +50,7 @@ function Recipe() {
   }
 
   return (loading) ? (
-    <h3>Loading...</h3>
+    <Spinner />
   ) : (recipe) && (
     <>
       <main>

@@ -19,6 +19,7 @@ function Profile() {
     height: "",
     age: "",
   })
+  
   const [isChangeMode, setIsChangeMode] = useState(false)
 
   useEffect(() => {
@@ -46,6 +47,7 @@ function Profile() {
         updates[key] = personalData[key]
       }
     }
+    console.log(updates)
     if (changed) {
       const res = await fetch("/api/users", {
         method: "PATCH",
@@ -125,7 +127,7 @@ function Profile() {
                 } bg-transparent md:w-[60%]`}
                 placeholder="kg"
                 disabled={!isChangeMode}
-                value={`${personalData.weight}${!isChangeMode ? " kg" : ""}`}
+                value={`${personalData.weight || 0}${!isChangeMode ? " kg" : ""}`}
                 name="weight"
                 onChange={onChange}
               />
@@ -139,7 +141,7 @@ function Profile() {
                 } bg-transparent md:w-[60%]`}
                 placeholder="cm"
                 disabled={!isChangeMode}
-                value={`${personalData.height}${!isChangeMode ? " cm" : ""}`}
+                value={`${personalData.height || 0}${!isChangeMode ? " cm" : ""}`}
                 name="height"
                 onChange={onChange}
               />
@@ -152,7 +154,7 @@ function Profile() {
                   isChangeMode && "input-base"
                 } bg-transparent md:w-[60%]`}
                 disabled={!isChangeMode}
-                value={personalData.age}
+                value={personalData.age || 0}
                 name="age"
                 onChange={onChange}
               />

@@ -8,13 +8,13 @@ import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Profile from "./pages/Profile"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
+import ProtectedRoute from "./components/ProtectedRoute"
 import CreateRecipe from "./pages/CreateRecipe"
 import { AuthProvider } from "./context/authContext"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 import { ToastContainer } from "react-toastify"
-import 'react-toastify/dist/ReactToastify.css';
-
+import "react-toastify/dist/ReactToastify.css"
 
 function App() {
   return (
@@ -36,7 +36,9 @@ function App() {
                     <Route path="/recipes/new" element={<CreateRecipe />} />
                     <Route path="/sign-in" element={<Login />} />
                     <Route path="/sign-up" element={<Register />} />
-                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/profile" element={<ProtectedRoute />}>
+                      <Route path="/profile" element={<Profile />} />
+                    </Route>
                   </Routes>
                 </DndProvider>
               </div>

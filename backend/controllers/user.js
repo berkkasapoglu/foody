@@ -126,15 +126,12 @@ const removeFromPlanner = () => {}
 
 const updatePersonalInformation = async (req, res, next) => {
   const { id } = req.user
-  const { gender, weight } = req.body
+  const updatedFields = {}
+  for (const [key, value] of Object.entries(req.body)) {
+    updatedFields["personalInformation." + key] = value
+  }
   await User.findByIdAndUpdate(id, {
-    $set: {
-      personalInformation: {
-        gender: gender,
-        weight: weight
-      },
-    }
-    
+    ...updatedFields,
   })
   res.status(200).json({
     success: true,
