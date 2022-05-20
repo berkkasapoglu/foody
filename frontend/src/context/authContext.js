@@ -15,9 +15,11 @@ const AuthProvider = ({ children }) => {
     }
     setCheckingStatus(false)
   }, [])
-  
+
   return (
-    <AuthContext.Provider value={{ auth, setAuth, checkingStatus }}>
+    <AuthContext.Provider
+      value={{ auth, setAuth, checkingStatus }}
+    >
       {children}
     </AuthContext.Provider>
   )
@@ -25,4 +27,4 @@ const AuthProvider = ({ children }) => {
 
 const useAuth = () => useContext(AuthContext)
 
-export { useAuth, AuthProvider  }
+export { useAuth, AuthProvider }

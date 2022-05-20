@@ -1,8 +1,10 @@
 const Recipe = require("../models/recipe")
 
 const getRecipes = async (req, res) => {
-  const { page = 0 } = req.query
-  const recipes = await Recipe.find({})
+  const { page = 0, search } = req.query
+  const recipes = await Recipe.find({
+    title: { $regex: new RegExp(search, "i") },
+  })
     .skip(parseInt(page) * 10)
     .limit(10)
   const size = await Recipe.count()
@@ -25,9 +27,12 @@ const getRecipe = async (req, res) => {
 
 const getFilteredRecipes = async (req, res) => {
   const { categoryName } = req.params
-  const { page = 0 } = req.query
+  const { page = 0, search } = req.query
   const skip = 10
-  const query = { category: { $regex: new RegExp(categoryName, "i") } }
+  const query = {
+    category: { $regex: new RegExp(categoryName, "i") },
+    title: { $regex: new RegExp(search, "i") },
+  }
   const size = await Recipe.count(query)
   const recipes = await Recipe.find(query)
     .skip(parseInt(page) * 10)

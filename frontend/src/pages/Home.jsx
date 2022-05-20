@@ -3,11 +3,11 @@ import { useEffect, useState } from "react"
 import CardItem from "../components/CardItem"
 import CategoryFilter from "../components/filters/CategoryFilter"
 import Spinner from "../components/layout/Spinner"
-import { useSearchParams } from "react-router-dom"
+import { useParams, useSearchParams } from "react-router-dom"
 
 function Home() {
-  const [selectedCategory, setSelectedCategory] = useState("")
-  // const [page, setPage] = useState(0)
+  const { categoryName } = useParams()
+  const [selectedCategory, setSelectedCategory] = useState(categoryName || "")
   const [searchParams, setSearchParams] = useSearchParams({})
   const [recipes, setRecipes] = useState([])
   const [loading, setLoading] = useState(false)
@@ -22,25 +22,18 @@ function Home() {
       )
       const result = await res.json()
       setRecipes((currentRecipes) => {
-        return [...currentRecipes, ...result.data]})
+        return [...currentRecipes, ...result.data]
+      })
       setLoading(false)
       setNextPage(result.next)
     }
     fetchRecipes()
   }, [searchParams, selectedCategory])
 
-  useEffect(() => {
-    setSearchParams({})
-    setRecipes([])    
-  }, [selectedCategory])
-
   const loadMore = () => {
-    console.log(nextPage)
     const currentPage = parseInt(searchParams.get("page")) || 0
-    nextPage && setSearchParams({
-      ...searchParams,
-      page: currentPage + 1
-    })
+    nextPage && searchParams.set("page", currentPage + 1)
+    setSearchParams(searchParams)
   }
   return (
     <>
@@ -49,20 +42,24 @@ function Home() {
           <div className="flex items-center">
             <HeaderRecipe width={250} height={150} />
             <div className="ml-3">
-              <h2 className="font-bold text-5xl">Only the best recipes</h2>
+              <h2 className="font-bold text-4xl md:text-5xl">Only the best recipes</h2>
               <p className="text-slate-400">Today's new recipes for you</p>
             </div>
           </div>
           <div>
-            <h3 className="font-bold text-2xl">{recipes.length}</h3>
+            <h3 className="font-bold text-2xl inline-block">{recipes.length}+</h3>
             <p className="text-slate-500">Recipes</p>
           </div>
         </div>
-        <CategoryFilter setSelectedCategory={setSelectedCategory} />
+        <CategoryFilter
+          setSelectedCategory={setSelectedCategory}
+          setRecipes={setRecipes}
+          selectedCategory={selectedCategory}
+        />
       </header>
 
       <main className="mt-24">
-        <div className="flex flex-wrap gap-10 justify-between gap-y-16">
+        <div className="flex flex-wrap gap-10 justify-center md:justify-between gap-y-16">
           {recipes.map((recipe) => (
             <CardItem key={recipe._id} recipe={recipe} />
           ))}

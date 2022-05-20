@@ -47,7 +47,7 @@ function Profile() {
         updates[key] = personalData[key]
       }
     }
-    console.log(updates)
+    
     if (changed) {
       const res = await fetch("/api/users", {
         method: "PATCH",

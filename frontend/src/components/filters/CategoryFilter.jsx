@@ -8,13 +8,19 @@ import { ReactComponent as Salad } from "../../assets/svg/salad.svg"
 import { ReactComponent as Soup } from "../../assets/svg/soup.svg"
 import { ReactComponent as AllFoods } from "../../assets/svg/allFood.svg"
 
-function CategoryFilter({ setSelectedCategory }) {
+function CategoryFilter({ setSelectedCategory, setRecipes, selectedCategory }) {
+  const changeCategory = (e) => {
+    if(e.currentTarget.name !== selectedCategory) {
+      setSelectedCategory(e.currentTarget.name)
+      setRecipes([])
+    }
+  }
   return (
-    <div className="flex justify-between">
+    <div className="flex flex-wrap justify-center gap-4 md:justify-between">
       <NavLink
         to="/"
-        name="all"
-        onClick={() => setSelectedCategory("")}
+        name=""
+        onClick={(e) => changeCategory(e)}
         children={({ isActive }) => (
           <CategoryItem active={isActive} name="All" Logo={AllFoods} />
         )}
@@ -22,7 +28,7 @@ function CategoryFilter({ setSelectedCategory }) {
       <NavLink
         to="/category/burger"
         name="burger"
-        onClick={() => setSelectedCategory("burger")}
+        onClick={(e) => changeCategory(e)}
         children={({ isActive }) => (
           <CategoryItem active={isActive} name="Burger" Logo={Burger} />
         )}
@@ -30,7 +36,7 @@ function CategoryFilter({ setSelectedCategory }) {
       <NavLink
         to="/category/fish"
         name="fish"
-        onClick={() => setSelectedCategory("fish")}
+        onClick={(e) => changeCategory(e)}
         children={({ isActive }) => (
           <CategoryItem name="Fish" Logo={Fish} active={isActive} />
         )}
@@ -38,7 +44,7 @@ function CategoryFilter({ setSelectedCategory }) {
       <NavLink
         to="/category/herbs"
         name="herbs"
-        onClick={() => setSelectedCategory("herbs")}
+        onClick={(e) => changeCategory(e)}
         children={({ isActive }) => (
           <CategoryItem name="Herbs" Logo={Herbs} active={isActive} />
         )}
@@ -46,7 +52,7 @@ function CategoryFilter({ setSelectedCategory }) {
       <NavLink
         to="/category/noodle"
         name="noodle"
-        onClick={() => setSelectedCategory("noodle")}
+        onClick={(e) => changeCategory(e)}
         children={({ isActive }) => (
           <CategoryItem name="Noodle" Logo={Noodle} active={isActive} />
         )}
@@ -54,7 +60,7 @@ function CategoryFilter({ setSelectedCategory }) {
       <NavLink
         to="/category/salad"
         name="salad"
-        onClick={() => setSelectedCategory("salad")}
+        onClick={(e) => changeCategory(e)}
         children={({ isActive }) => (
           <CategoryItem name="Salad" Logo={Salad} active={isActive} />
         )}
@@ -62,7 +68,7 @@ function CategoryFilter({ setSelectedCategory }) {
       <NavLink
         to="/category/soup"
         name="soup"
-        onClick={() => setSelectedCategory("soup")}
+        onClick={(e) => changeCategory(e)}
         children={({ isActive }) => (
           <CategoryItem name="Soup" Logo={Soup} active={isActive} />
         )}

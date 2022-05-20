@@ -1,6 +1,6 @@
 import Sidebar from "./components/layout/Sidebar"
 import Home from "./pages/Home"
-import Search from "./components/layout/Header"
+import Header from "./components/layout/Header"
 import Favorites from "./pages/Favorites"
 import MealPlanner from "./pages/MealPlanner"
 import Recipe from "./pages/Recipe"
@@ -15,16 +15,18 @@ import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
+import { useState } from "react"
 
 function App() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   return (
     <>
       <AuthProvider>
         <BrowserRouter>
-          <Sidebar />
-          <div className="bg-body ml-[250px] min-h-screen p-10">
+          <Sidebar setIsSidebarOpen={setIsSidebarOpen} isSidebarOpen={isSidebarOpen} />
+          <div className="bg-body md:ml-[250px] min-h-screen p-10">
             <div className="max-w-[1100px] mx-auto">
-              <Search />
+              <Header setIsSidebarOpen={setIsSidebarOpen} />
               <div className="mt-12">
                 <DndProvider backend={HTML5Backend}>
                   <Routes>
