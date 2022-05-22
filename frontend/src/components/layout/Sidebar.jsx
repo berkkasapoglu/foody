@@ -72,7 +72,7 @@ function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
         />
 
         <NavLink
-          to="/tracker"
+          to="/planner"
           children={({ isActive }) =>
             isActive ? (
               <SidebarItem

@@ -1,13 +1,18 @@
 const Recipe = require("../models/recipe")
 
 const getRecipes = async (req, res) => {
+  const { categoryName } = req.params
   const { page = 0, search } = req.query
-  const recipes = await Recipe.find({
-    title: { $regex: new RegExp(search, "i") },
-  })
+  const query = {
+    title: {
+      $regex: new RegExp(search, "i"),
+    },
+    category: { $regex: new RegExp(categoryName, "i") },
+  }
+  const recipes = await Recipe.find(query)
     .skip(parseInt(page) * 10)
     .limit(10)
-  const size = await Recipe.count()
+  const size = await Recipe.count(query)
   const skip = 10
   res.status(200).json({
     success: true,
@@ -25,27 +30,18 @@ const getRecipe = async (req, res) => {
   })
 }
 
-const getFilteredRecipes = async (req, res) => {
-  const { categoryName } = req.params
-  const { page = 0, search } = req.query
-  const skip = 10
-  const query = {
-    category: { $regex: new RegExp(categoryName, "i") },
-    title: { $regex: new RegExp(search, "i") },
-  }
-  const size = await Recipe.count(query)
-  const recipes = await Recipe.find(query)
-    .skip(parseInt(page) * 10)
-    .limit(10)
-  res.status(200).json({
+const createRecipe = async(req, res) => {
+  const recipe = new Recipe(req.body)
+  const newRecipe  = await recipe.save()
+  return res.status(201).json({
     success: true,
-    data: recipes,
-    next: (parseInt(page) + 1) * skip < size,
+    data: newRecipe,
+    message: "Recipe created successfully."
   })
 }
 
 module.exports = {
   getRecipe,
   getRecipes,
-  getFilteredRecipes,
+  createRecipe
 }

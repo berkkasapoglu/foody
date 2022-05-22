@@ -23,18 +23,17 @@ const recipeSchema = new Schema({
   calories: {
     type: Number,
     required: true,
-    set: v => Math.round(v)
+    set: (v) => Math.round(v),
   },
   time: {
     type: Number,
-    required: true,
   },
   nutritions: [
     {
       label: String,
       total: {
         type: Number,
-        set: v => Math.round(v)
+        set: (v) => Math.round(v),
       },
       unit: String,
     },
@@ -43,8 +42,8 @@ const recipeSchema = new Schema({
   difficulty: {
     type: String,
     required: true,
-    enum: ['Hard', 'Intermediate', 'Easy']
-  }
+    enum: ["Hard", "Intermediate", "Easy"],
+  },
 })
 
 module.exports = mongoose.model("Recipe", recipeSchema)

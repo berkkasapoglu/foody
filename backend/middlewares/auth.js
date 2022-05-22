@@ -9,9 +9,14 @@ const auth = async (req, res, next) => {
     if (auth && auth.startsWith("Bearer")) {
       token = auth.split(" ")[1]
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
+      const { sort } = req.query
+      const sortQuery = generateSortQuery(sort)
       req.user = await User.findById(decoded.id)
         .select("-password")
-        .populate("favorites")
+        .populate({
+          path: "favorites",
+          options: { sort: sortQuery },
+        })
         .populate("planner.meals.meal")
       next()
     }
@@ -22,6 +27,16 @@ const auth = async (req, res, next) => {
   if (!token) {
     next(new AppError(401, "Not Authorized"))
   }
+}
+
+const generateSortQuery = (sort) => {
+  let sortCategory, sortType
+  if (sort) {
+    const fields = sort.split("_")
+    sortCategory = fields[0]
+    sortType = fields[2] === "asc" ? "" : "-"
+  }
+  return sortType+sortCategory
 }
 
 module.exports = auth

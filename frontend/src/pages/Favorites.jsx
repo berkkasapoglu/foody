@@ -1,20 +1,24 @@
 import FavoriteItem from "../components/FavoriteItem"
-import { useUser } from "../hooks/useUser"
 import DropContainer from "../components/DropContainer"
+import Spinner from "../components/layout/Spinner"
+import SortBar from "../components/filters/SortBar"
+import { useUser } from "../hooks/useUser"
 import { useState, useEffect } from "react"
+import { useAuth } from "../context/authContext"
+import { useLocalStorage } from "../hooks/useLocalStorage"
+
 import moment from "moment"
 import {
   CircularProgressbarWithChildren,
   buildStyles,
 } from "react-circular-progressbar"
 import "react-circular-progressbar/dist/styles.css"
-import Spinner from "../components/layout/Spinner"
-import { useLocalStorage } from "../hooks/useLocalStorage"
-import { useAuth } from "../context/authContext"
 import { toast } from "react-toastify"
+import { useSearchParams } from "react-router-dom"
 
 function Favorites() {
-  const { data: user, loading } = useUser()
+  const [searchParams] = useSearchParams()
+  const { data: user, loading } = useUser(null, searchParams.toString())
   const { auth } = useAuth()
   const [favorites, setFavorites] = useState([])
   const [mealPlan, setMealPlan] = useLocalStorage("recipes", {})
@@ -44,7 +48,6 @@ function Favorites() {
         })
       }
     }
-
     const res = await fetch("api/users/planner", {
       method: "POST",
       headers: {
@@ -57,27 +60,22 @@ function Favorites() {
     result.success ? toast.success(result.message) : toast.error(result.message)
   }
 
-  return loading ? (
-    <Spinner />
-  ) : (
+  return (
     <div className="flex flex-col justify-between gap-12 xl:flex-row">
       <div className="flex-1">
-        <div className="flex justify-between pb-1 border-b-2 border-primary mb-5">
-          <p className="font-bold">Filter</p>
-          <div>
-            <p className="text-gray-400">
-              Sort by: <span className="text-black font-bold">Calorie</span>
-            </p>
-          </div>
-        </div>
-        {favorites.map((favorite) => (
-          <FavoriteItem
-            favorite={favorite}
-            key={favorite._id}
-            setFavorites={setFavorites}
-            favorites={favorites}
-          />
-        ))}
+        <SortBar />
+        {loading ? (
+          <Spinner />
+        ) : (
+          favorites.map((favorite) => (
+            <FavoriteItem
+              favorite={favorite}
+              key={favorite._id}
+              setFavorites={setFavorites}
+              favorites={favorites}
+            />
+          ))
+        )}
       </div>
       <div className="basis-[28%]">
         <h3 className="text-xl font-bold">Make your day</h3>

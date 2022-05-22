@@ -1,33 +1,68 @@
 import { useState } from "react"
 import { BsTrash } from "react-icons/bs"
 import { MdOutlineAddBox } from "react-icons/md"
+import { useNavigate } from "react-router-dom"
+import { toast } from "react-toastify"
+import { useAuth } from "../context/authContext"
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
+import storage from "../firebase.config"
+import Spinner from "../components/layout/Spinner"
+
 function CreateRecipe() {
+  const { auth } = useAuth()
+  const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     title: "",
-    calories: 0,
-    fat: 0,
-    carbs: 0,
-    image: {},
-    protein: 0,
+    source: auth.username,
+    calories: "",
+    category: "",
+    nutritions: [
+      {
+        label: "Protein",
+        total: "",
+        unit: "g",
+      },
+      {
+        label: "Fat",
+        total: "",
+        unit: "g",
+      },
+      {
+        label: "Carbs",
+        total: "",
+        unit: "g",
+      },
+    ],
+    image: "",
     ingredients: [""],
+    difficulty: "Easy",
   })
 
-  const { title, ingredients } = formData
+  const navigate = useNavigate()
+
+  const { title, ingredients, calories, nutritions, image } = formData
   const onChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    })
+    if (e.target.type === "file") {
+      setFormData({
+        ...formData,
+        image: e.target.files[0],
+      })
+    } else {
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value,
+      })
+    }
   }
 
-  const handleIngredientChange = (e, index) => {
-    const ingredientsCopy = [...ingredients]
-    ingredientsCopy[index] = e.target.value
-    setFormData({ ...formData, ingredients: ingredientsCopy })
-  }
-
-  const onSubmit = (e) => {
-    e.preventDefault()
+  const handleArrayInputChange = (e, index) => {
+    const copyData = [...formData[e.target.name]]
+    if (e.target.name === "nutritions") {
+      copyData[index].total = e.target.value
+    } else {
+      copyData[index] = e.target.value
+    }
+    setFormData({ ...formData, [e.target.name]: copyData })
   }
 
   const handleAddIngredient = () => {
@@ -38,6 +73,53 @@ function CreateRecipe() {
     const ingredientsCopy = [...ingredients]
     ingredientsCopy.splice(index, 1)
     return setFormData({ ...formData, ingredients: ingredientsCopy })
+  }
+
+  const uploadImage = async () => {
+    const fileName = new Date().getTime() + image.name
+    const storageRef = ref(storage, `/images/${fileName}`)
+    const uploadTask = uploadBytesResumable(storageRef, image)
+    const imageUrl = await new Promise((resolve, reject) => {
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {},
+        (error) => {
+          reject(error)
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
+            resolve(downloadUrl)
+          })
+        }
+      )
+    }).catch((error) => {
+      toast.error("Images not uploaded")
+    })
+    return imageUrl
+  }
+
+  const onSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    const imageUrl = await uploadImage()
+    const formDataCopy = { ...formData }
+    formDataCopy.image = imageUrl
+    const res = await fetch("/api/recipes", {
+      method: "POST",
+      body: JSON.stringify(formDataCopy),
+      headers: {
+        authorization: "Bearer " + auth.token,
+        "Content-Type": "application/json",
+      },
+    })
+    const result = await res.json()
+    setLoading(false)
+    if (result.success) {
+      navigate(`/recipes/${result.data._id}`)
+      toast.success(result.message)
+    } else {
+      toast.error(result.message)
+    }
   }
 
   return (
@@ -56,9 +138,10 @@ function CreateRecipe() {
             name="title"
             id="title"
             placeholder="Title"
-            className="w-full p-2 rounded-md bg-inherit border-input border-2"
+            className="input-base"
             value={title}
             onChange={onChange}
+            required
           />
         </div>
         <div>
@@ -77,10 +160,11 @@ function CreateRecipe() {
                 type="text"
                 id={idx}
                 name="ingredients"
-                value={ingredients[idx]}
-                onChange={(e) => handleIngredientChange(e, idx)}
+                value={item}
+                onChange={(e) => handleArrayInputChange(e, idx)}
                 placeholder="New Ingredient"
-                className="ml-2 w-full p-2 rounded-md bg-inherit border-input border-2"
+                className="ml-2 input-base"
+                required
               />
             </div>
           ))}
@@ -107,61 +191,53 @@ function CreateRecipe() {
               id="calories"
               name="calories"
               placeholder="Calories"
-              className="w-full p-2 rounded-md bg-inherit border-input border-2"
+              className="input-base"
+              value={calories}
               onChange={onChange}
+              step=".01"
+              required
             />
           </div>
-          <div className="mr-3">
-            <label
-              htmlFor="title"
-              className="block text-label font-bold text-lg mb-2"
-            >
-              Fat
-            </label>
-            <input
-              min={1}
-              type="number"
-              name="fat"
-              id="fat"
-              placeholder="Fat"
-              className="w-full p-2 rounded-md bg-inherit border-input border-2"
-              onChange={onChange}
-            />
-          </div>
-          <div className="mr-3">
-            <h3
-              htmlFor="carbs"
-              className="block text-label font-bold text-lg mb-2"
-            >
-              Carbs
-            </h3>
-            <input
-              min={1}
-              type="number"
-              id="carbs"
-              name="carbs"
-              placeholder="Carbs"
-              className="w-full p-2 rounded-md bg-inherit border-input border-2"
-              onChange={onChange}
-            />
-          </div>
-          <div className="mr-3">
-            <label
-              htmlFor="protein"
-              className="block text-label font-bold text-lg mb-2"
-            >
-              Protein
-            </label>
-            <input
-              min={1}
-              type="number"
-              id="protein"
-              name="protein"
-              placeholder="Protein"
-              className="w-full p-2 rounded-md bg-inherit border-input border-2"
-              onChange={onChange}
-            />
-          </div>
+          {nutritions.map((item, idx) => (
+            <div className="mr-3" key={idx}>
+              <label
+                htmlFor={item.label}
+                className="block text-label font-bold text-lg mb-2"
+              >
+                {item.label}
+              </label>
+              <input
+                min={1}
+                type="number"
+                name="nutritions"
+                id={item.label}
+                placeholder={item.label}
+                className="input-base"
+                value={nutritions[idx].total}
+                step=".01"
+                onChange={(e) => handleArrayInputChange(e, idx)}
+                required
+              />
+            </div>
+          ))}
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="title"
+            className="block text-label font-bold text-lg mb-2"
+          >
+            Difficulty
+          </label>
+          <select
+            name="difficulty"
+            id="difficulty"
+            className="input-base"
+            onChange={onChange}
+          >
+            <option value="Easy">Easy</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Hard">Hard</option>
+          </select>
         </div>
         <div className="mb-4">
           <label
@@ -173,13 +249,18 @@ function CreateRecipe() {
           <input
             type="file"
             accept="img"
-            id="image"
+            name="image"
+            onChange={onChange}
             className="w-full p-2 rounded-md bg-inherit border-input border-2"
           />
         </div>
-        <button className="mb-2 py-2 px-5 bg-primary rounded-md text-body font-bold transition hover:bg-red-700">
-          Create Recipe
-        </button>
+        {loading ? (
+          <Spinner />
+        ) : (
+          <button className="mb-2 py-2 px-5 bg-primary rounded-md text-body font-bold transition hover:bg-red-700">
+            Create Recipe
+          </button>
+        )}
       </form>
     </>
   )

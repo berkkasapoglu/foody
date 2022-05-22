@@ -12,6 +12,7 @@ function Home() {
   const [recipes, setRecipes] = useState([])
   const [loading, setLoading] = useState(false)
   const [nextPage, setNextPage] = useState(false)
+  const [resetPage, setResetPage] = useState(true)
   useEffect(() => {
     const fetchRecipes = async () => {
       setLoading(true)
@@ -22,8 +23,11 @@ function Home() {
       )
       const result = await res.json()
       setRecipes((currentRecipes) => {
-        return [...currentRecipes, ...result.data]
+        return resetPage
+          ? [...result.data]
+          : [...currentRecipes, ...result.data]
       })
+      setResetPage(true)
       setLoading(false)
       setNextPage(result.next)
     }
@@ -34,6 +38,7 @@ function Home() {
     const currentPage = parseInt(searchParams.get("page")) || 0
     nextPage && searchParams.set("page", currentPage + 1)
     setSearchParams(searchParams)
+    setResetPage(false)
   }
   return (
     <>
@@ -42,12 +47,16 @@ function Home() {
           <div className="flex items-center">
             <HeaderRecipe width={250} height={150} />
             <div className="ml-3">
-              <h2 className="font-bold text-4xl md:text-5xl">Only the best recipes</h2>
+              <h2 className="font-bold text-4xl md:text-5xl">
+                Only the best recipes
+              </h2>
               <p className="text-slate-400">Today's new recipes for you</p>
             </div>
           </div>
           <div>
-            <h3 className="font-bold text-2xl inline-block">{recipes.length}+</h3>
+            <h3 className="font-bold text-2xl inline-block">
+              {recipes.length}+
+            </h3>
             <p className="text-slate-500">Recipes</p>
           </div>
         </div>
@@ -58,7 +67,12 @@ function Home() {
         />
       </header>
 
-      <main className="mt-24">
+      <main className="mt-20">
+        {searchParams.get("search") && (
+          <h3 className="mb-2 font-bold text-2xl text-right">
+            Results for "{searchParams.get("search")}"
+          </h3>
+        )}
         <div className="flex flex-wrap gap-10 justify-center md:justify-between gap-y-16">
           {recipes.map((recipe) => (
             <CardItem key={recipe._id} recipe={recipe} />
@@ -68,9 +82,11 @@ function Home() {
           {loading ? (
             <Spinner />
           ) : (
-            <button className="btn px-12 mx-auto" onClick={loadMore}>
-              Load More...
-            </button>
+            nextPage && (
+              <button className="btn px-12 mx-auto" onClick={loadMore}>
+                Load More...
+              </button>
+            )
           )}
         </div>
       </main>

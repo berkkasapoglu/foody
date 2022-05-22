@@ -33,13 +33,15 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="category/:categoryName" element={<Home />} />
                     <Route path="/favorites" element={<Favorites />} />
-                    <Route path="/tracker" element={<MealPlanner />} />
+                    <Route path="/planner" element={<MealPlanner />} />
                     <Route path="/recipes/:recipeId" element={<Recipe />} />
-                    <Route path="/recipes/new" element={<CreateRecipe />} />
+                    <Route path="/recipes/new" element={<ProtectedRoute />}>
+                      <Route path="" element={<CreateRecipe />} />
+                    </Route>
                     <Route path="/sign-in" element={<Login />} />
                     <Route path="/sign-up" element={<Register />} />
                     <Route path="/profile" element={<ProtectedRoute />}>
-                      <Route path="/profile" element={<Profile />} />
+                      <Route path="" element={<Profile />} />
                     </Route>
                   </Routes>
                 </DndProvider>

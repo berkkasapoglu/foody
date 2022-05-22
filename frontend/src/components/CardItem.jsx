@@ -40,7 +40,7 @@ function CardItem({ recipe }) {
             <h3 className="font-bold text-lg">{parseInt(recipe.calories)}</h3>
             <p className="text-sm">Kcal</p>
           </div>
-          <h3 className="pl-3">Dessert</h3>
+          <h3 className="pl-3">{recipe.category}</h3>
         </div>
       </div>
       <Link to={`/recipes/${recipe._id}`} className="absolute bottom-0 left-0 py-3 text-white font-bold bg-primary w-full rounded-b-lg">

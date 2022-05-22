@@ -17,6 +17,7 @@ function Header({ setIsSidebarOpen }) {
   const handleSearch = (e) => {
     e.preventDefault()
     searchParams.set("search", searchRef.current.value)
+    searchParams.delete("page")
     setSearchParams(searchParams)
   }
   return (
