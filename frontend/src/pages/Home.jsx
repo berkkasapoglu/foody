@@ -13,6 +13,7 @@ function Home() {
   const [loading, setLoading] = useState(false)
   const [nextPage, setNextPage] = useState(false)
   const [resetPage, setResetPage] = useState(true)
+
   useEffect(() => {
     const fetchRecipes = async () => {
       setLoading(true)
@@ -32,7 +33,7 @@ function Home() {
       setNextPage(result.next)
     }
     fetchRecipes()
-  }, [searchParams, selectedCategory])
+  }, [searchParams, selectedCategory, resetPage])
 
   const loadMore = () => {
     const currentPage = parseInt(searchParams.get("page")) || 0

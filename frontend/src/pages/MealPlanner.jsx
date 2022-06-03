@@ -18,6 +18,9 @@ const mealTimeStyle = {
 }
 
 const calculateWeeklyStats = (weeklyMeals, personalInformation) => {
+  const today = new Date()
+  const firstDay = new Date(today.setDate(today.getDate() - today.getDay() + 1))
+  const lastDay = new Date(today.setDate(today.getDate() - today.getDay() + 7))
   const stats = {
     totalCalorieTaken: 0,
     totalFatTaken: 0,
@@ -25,8 +28,12 @@ const calculateWeeklyStats = (weeklyMeals, personalInformation) => {
     totalProteinTaken: 0,
     BMI: 0,
   }
-  weeklyMeals.length &&
-    weeklyMeals.map((mealData) => {
+  const filteredWeeklyMeals = weeklyMeals.filter(meal => {
+    return meal.start>firstDay && meal.end < lastDay
+  })
+  
+  filteredWeeklyMeals.length &&
+  filteredWeeklyMeals.forEach((mealData) => {
       stats.totalCalorieTaken += mealData.meal.calories
       stats.totalFatTaken += mealData.meal.nutritions[0].total
       stats.totalCarbTaken += mealData.meal.nutritions[1].total
@@ -46,13 +53,31 @@ const calculateWeeklyStats = (weeklyMeals, personalInformation) => {
 }
 function MealPlanner() {
   const [meals, setMeals] = useState([])
-  const { data: user } = useUser({})
+  const { data: user, setData: setUser } = useUser({})
   useEffect(() => {
     if (user && user.planner) {
+      const getUserEvents = () => {
+        const allEvents = []
+        for (let dailyPlan of user.planner) {
+          if (dailyPlan.meals) {
+            dailyPlan.meals.forEach((item) => {
+              if (item.meal) {
+                allEvents.push({
+                  title: item.meal.title,
+                  start: moment(dailyPlan.day).toDate(),
+                  end: moment(dailyPlan.day).toDate(),
+                  meal: item.meal,
+                  mealTime: item.mealTime,
+                })
+              }
+            })
+          }
+        }
+        setMeals(allEvents)
+      }
       getUserEvents()
     }
   }, [user])
-
   const weeklyStats = useMemo(
     () => calculateWeeklyStats(meals, user.personalInformation),
     [meals, user.personalInformation]
@@ -67,25 +92,6 @@ function MealPlanner() {
     }
   }
 
-  const getUserEvents = () => {
-    const allEvents = []
-    for (let dailyPlan of user.planner) {
-      if (dailyPlan.meals) {
-        dailyPlan.meals.map((item) => {
-          if (item.meal) {
-            allEvents.push({
-              title: item.meal.title,
-              start: moment(dailyPlan.day).toDate(),
-              end: moment(dailyPlan.day).toDate(),
-              meal: item.meal,
-              mealTime: item.mealTime,
-            })
-          }
-        })
-      }
-    }
-    setMeals(allEvents)
-  }
   return (
     <div>
       <Calendar
@@ -97,7 +103,11 @@ function MealPlanner() {
         events={meals}
         style={{ height: "70vh", fontSize: ".8rem" }}
         eventPropGetter={eventPropGetter}
-        components={{ event: CalendarPopOver }}
+        components={{
+          event: (props) => (
+            <CalendarPopOver {...props} user={user} setUser={setUser} />
+          ),
+        }}
       />
       <div className="flex justify-end gap-3 mt-2">
         <div className="inline-flex items-center gap-1">
@@ -117,9 +127,7 @@ function MealPlanner() {
           <h3 className="font-bold">Other</h3>
         </div>
       </div>
-      {
-        
-      }
+      {}
       <h3 className="text-2xl font-bold my-5">Weekly Summary</h3>
       <div className="flex justify-between gap-5 flex-wrap">
         <SummaryCard title="Total Calorie Taken">
@@ -183,7 +191,7 @@ const calculateNeeds = (personalInformation) => {
       needs.calorie = (655.1 + 9.6 * weight + 1.9 * height - 4.7 * age) * 7
     }
     needs.carb = parseInt(needs.calorie * 0.55 * 0.13) * 7
-    needs.fat = parseInt(needs.calorie * 0.30 * 0.13) * 7
+    needs.fat = parseInt(needs.calorie * 0.3 * 0.13) * 7
     needs.protein = parseInt(needs.calorie * 0.25 * 0.13) * 7
     return needs
   }

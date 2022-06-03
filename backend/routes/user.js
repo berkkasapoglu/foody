@@ -8,11 +8,13 @@ const {
   removeFromFavorites,
   getMe,
   addToPlanner,
-  updatePersonalInformation
+  removeFromPlanner,
+  updatePersonalInformation,
 } = require("../controllers/user")
 const auth = require("../middlewares/auth")
 
-router.route("/")
+router
+  .route("/")
   .post(catchAsync(register))
   .patch(auth, catchAsync(updatePersonalInformation))
 
@@ -23,7 +25,10 @@ router
   .post(auth, catchAsync(addToFavorites))
   .delete(auth, catchAsync(removeFromFavorites))
 
-router.post("/planner", auth, catchAsync(addToPlanner))
+router
+  .route("/planner")
+  .post(auth, catchAsync(addToPlanner))
+  .delete(auth, catchAsync(removeFromPlanner))
 
 router.post("/favorites/:recipeId", auth, catchAsync(addToFavorites))
 

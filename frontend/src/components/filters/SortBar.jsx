@@ -1,28 +1,41 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import { AiOutlineArrowDown } from "react-icons/ai"
 import DropdownMenu from "../layout/DropdownMenu"
 import DropdownItem from "../layout/DropdownItem"
-const options = ["Suggested", "Calories: Low to High", "Calories: High to Low"]
+const options = [
+  {
+    name: "Suggested",
+    sortParam: "",
+  },
+  { name: "Calories: Low to High", sortParam: "calories_by_asc" },
+  { name: "Calories: High to Low", sortParam: "calories_by_desc" },
+]
 
 function SortBar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [selectedOption, setSelectedOption] = useState("Suggested")
   const [searchParams, setSearchParams] = useSearchParams()
+  const currentSortOption = options.find((item) => {
+    const currentParam = searchParams.toString()
+      ? searchParams.toString().split("=")[1]
+      : ""
+    return item.sortParam === currentParam
+  })
+
+  const [selectedOption, setSelectedOption] = useState(
+    currentSortOption ? currentSortOption.name : "Suggested"
+  )
 
   const handleOptionSelect = (value) => {
     setSelectedOption(value)
     setIsDropdownOpen(false)
-    if (value === options[1]) {
-      searchParams.set("sort", "calories_by_asc")
-      setSearchParams(searchParams)
-    } else if (value === options[2]) {
-      searchParams.set("sort", "calories_by_desc")
-      setSearchParams(searchParams)
+    const { sortParam = "" } = options.find((item) => item.name === value)
+    if (sortParam) {
+      searchParams.set("sort", sortParam)
     } else {
       searchParams.delete("sort")
-      setSearchParams(searchParams)
     }
+    setSearchParams(searchParams)
   }
 
   return (
@@ -41,25 +54,16 @@ function SortBar() {
         <AiOutlineArrowDown />
         <div>
           {isDropdownOpen && (
-            <DropdownMenu>
-              <DropdownItem
-                selected={selectedOption === options[0]}
-                handleOptionSelect={() => handleOptionSelect(options[0])}
-              >
-                {options[0]}
-              </DropdownItem>
-              <DropdownItem
-                selected={selectedOption === options[1]}
-                handleOptionSelect={() => handleOptionSelect(options[1])}
-              >
-                {options[1]}
-              </DropdownItem>
-              <DropdownItem
-                selected={selectedOption === options[2]}
-                handleOptionSelect={() => handleOptionSelect(options[2])}
-              >
-                {options[2]}
-              </DropdownItem>
+            <DropdownMenu setIsDropdownOpen={setIsDropdownOpen}>
+              {options.map((item, idx) => (
+                <DropdownItem
+                  selected={selectedOption === item.name}
+                  handleOptionSelect={() => handleOptionSelect(item.name)}
+                  key={Math.random()}
+                >
+                  {item.name}
+                </DropdownItem>
+              ))}
             </DropdownMenu>
           )}
         </div>

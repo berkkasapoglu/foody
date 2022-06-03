@@ -1,5 +1,5 @@
 import { FiSearch } from "react-icons/fi"
-import { Link, useSearchParams } from "react-router-dom"
+import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { logout } from "../../services/auth"
 import { useAuth } from "../../context/authContext"
 import { useRef } from "react"
@@ -13,12 +13,13 @@ function Header({ setIsSidebarOpen }) {
     logout()
     setAuth({ isAuthenticated: false })
   }
-
+  const navigate = useNavigate()
   const handleSearch = (e) => {
     e.preventDefault()
     searchParams.set("search", searchRef.current.value)
     searchParams.delete("page")
     setSearchParams(searchParams)
+    navigate(`/?${searchParams.toString()}`)
   }
   return (
     <nav className="flex justify-between items-center">

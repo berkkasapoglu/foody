@@ -122,7 +122,30 @@ const addToPlanner = async (req, res, next) => {
   })
 }
 
-const removeFromPlanner = () => {}
+const removeFromPlanner = async (req, res, next) => {
+  const { id, mealTime, date } = req.body
+  const { id: userId } = req.user
+  const user = await User.findOneAndUpdate(
+    {
+      "planner.day": new Date(date),
+      _id: userId,
+    },
+    {
+      $pull: {
+        "planner.$.meals": {
+          mealTime: mealTime,
+          meal: id,
+        },
+      },
+    },
+    {new: true}
+  ).populate("planner.meals.meal")
+  res.status(200).json({
+    success: true,
+    message: "Recipes deleted successfully from planner.",
+    data: user
+  })
+}
 
 const updatePersonalInformation = async (req, res, next) => {
   const { id } = req.user
@@ -147,4 +170,5 @@ module.exports = {
   getMe,
   addToPlanner,
   updatePersonalInformation,
+  removeFromPlanner,
 }

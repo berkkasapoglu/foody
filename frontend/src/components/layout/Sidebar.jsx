@@ -8,6 +8,13 @@ import { NavLink, Link } from "react-router-dom"
 import { useAuth } from "../../context/authContext"
 import { useEffect, useRef } from "react"
 
+const SidebarItems = [
+  { name: "Recipes", icon: GiOpenBook, to: "/" },
+  { name: "Favorites", icon: GiHearts, to: "/favorites" },
+  { name: "Meal Planner", icon: MdTrackChanges, to: "/planner" },
+  { name: "Profile", icon: MdAccountCircle, to:"/profile" },
+]
+
 function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
   const { auth } = useAuth()
   useEffect(() => {
@@ -34,7 +41,10 @@ function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
         className="absolute top-4 right-4 cursor-pointer text-lg transition md:hidden hover:text-primary"
       />
       <h3>
-        <Link to="/" className="block font-bold text-2xl text-center cursor-pointer">
+        <Link
+          to="/"
+          className="block font-bold text-2xl text-center cursor-pointer"
+        >
           Foody
         </Link>
       </h3>
@@ -50,55 +60,19 @@ function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
         </span>
       </div>
       <div>
-        <NavLink
-          to="/"
-          children={({ isActive }) =>
-            isActive ? (
-              <SidebarItem active={true} icon={GiOpenBook} name={"Recipes"} />
-            ) : (
-              <SidebarItem icon={GiOpenBook} name={"Recipes"} />
-            )
-          }
-        />
-        <NavLink
-          to="/favorites"
-          children={({ isActive }) =>
-            isActive ? (
-              <SidebarItem active={true} icon={GiHearts} name={"Favorites"} />
-            ) : (
-              <SidebarItem icon={GiHearts} name={"Favorites"} />
-            )
-          }
-        />
-
-        <NavLink
-          to="/planner"
-          children={({ isActive }) =>
-            isActive ? (
-              <SidebarItem
-                active={true}
-                icon={MdTrackChanges}
-                name={"Meal Planner"}
-              />
-            ) : (
-              <SidebarItem icon={MdTrackChanges} name={"Meal Planner"} />
-            )
-          }
-        />
-        <NavLink
-          to="/profile"
-          children={({ isActive }) =>
-            isActive ? (
-              <SidebarItem
-                active={true}
-                icon={MdAccountCircle}
-                name={"Profile"}
-              />
-            ) : (
-              <SidebarItem icon={MdAccountCircle} name={"Profile"} />
-            )
-          }
-        />
+        {SidebarItems.map((item, idx) => (
+          <NavLink
+            to={item.to}
+            children={({ isActive }) =>
+              isActive ? (
+                <SidebarItem active={true} icon={item.icon} name={item.name} setIsSidebarOpen={setIsSidebarOpen} />
+              ) : (
+                <SidebarItem icon={item.icon} name={item.name} setIsSidebarOpen={setIsSidebarOpen} />
+              )
+            }
+            key={idx}
+          />
+        ))}
       </div>
       <div className="px-3 mb-5 text-center absolute bottom-0 w-full">
         <Link

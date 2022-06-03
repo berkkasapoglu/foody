@@ -33,7 +33,6 @@ function Favorites() {
       setFavorites(favoritesCopy)
     }
   }, [user, loading])
-
   const addToPlan = async () => {
     const organizedPlan = {
       day: moment().format("YYYY MM DD"),
@@ -42,10 +41,14 @@ function Favorites() {
     for (let key of Object.keys(mealPlan)) {
       const meals = mealPlan[key]
       for (let meal of meals) {
-        organizedPlan.meals.push({
-          mealTime: key,
-          meal: meal._id,
-        })
+        for(let i=0; i<meal.count; i++) {
+          organizedPlan.meals.push({
+            mealTime: key,
+            meal: meal._id,
+            count: meal.count
+          })
+        }
+        
       }
     }
     const res = await fetch("api/users/planner", {

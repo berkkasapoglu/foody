@@ -15,6 +15,7 @@ const plannerSchema = new Schema(
           type: Schema.Types.ObjectId,
           ref: "Recipe",
         },
+        count: Number
       },
     ],
   },
