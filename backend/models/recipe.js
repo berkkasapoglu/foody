@@ -44,6 +44,10 @@ const recipeSchema = new Schema({
     required: true,
     enum: ["Hard", "Intermediate", "Easy"],
   },
+  owner: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
 })
 
 module.exports = mongoose.model("Recipe", recipeSchema)

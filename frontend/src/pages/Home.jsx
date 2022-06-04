@@ -1,5 +1,5 @@
 import { ReactComponent as HeaderRecipe } from "../assets/headerRecipe.svg"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import CardItem from "../components/CardItem"
 import CategoryFilter from "../components/filters/CategoryFilter"
 import Spinner from "../components/layout/Spinner"
@@ -12,8 +12,8 @@ function Home() {
   const [recipes, setRecipes] = useState([])
   const [loading, setLoading] = useState(false)
   const [nextPage, setNextPage] = useState(false)
-  const [resetPage, setResetPage] = useState(true)
 
+  let resetPage = useRef(true)
   useEffect(() => {
     const fetchRecipes = async () => {
       setLoading(true)
@@ -24,22 +24,24 @@ function Home() {
       )
       const result = await res.json()
       setRecipes((currentRecipes) => {
-        return resetPage
-          ? [...result.data]
-          : [...currentRecipes, ...result.data]
+        const isPageReseting = resetPage.current
+        resetPage.current = true
+        return isPageReseting ?
+        [...result.data] :
+        [...currentRecipes, ...result.data]
       })
-      setResetPage(true)
+
       setLoading(false)
       setNextPage(result.next)
     }
     fetchRecipes()
-  }, [searchParams, selectedCategory, resetPage])
+  }, [searchParams, selectedCategory])
 
   const loadMore = () => {
     const currentPage = parseInt(searchParams.get("page")) || 0
     nextPage && searchParams.set("page", currentPage + 1)
     setSearchParams(searchParams)
-    setResetPage(false)
+    resetPage.current = false
   }
   return (
     <>

@@ -30,18 +30,30 @@ const getRecipe = async (req, res) => {
   })
 }
 
-const createRecipe = async(req, res) => {
+const createRecipe = async (req, res) => {
   const recipe = new Recipe(req.body)
-  const newRecipe  = await recipe.save()
+  const user = req.user
+  recipe.owner = user._id
+  const newRecipe = await recipe.save()
   return res.status(201).json({
     success: true,
     data: newRecipe,
-    message: "Recipe created successfully."
+    message: "Recipe created successfully.",
+  })
+}
+
+const deleteRecipe = async (req, res) => {
+  const { id } = req.params
+  await Recipe.findByIdAndDelete(id)
+  res.status(200).json({
+    success: true,
+    message: "Recipe deleted successfully.",
   })
 }
 
 module.exports = {
   getRecipe,
   getRecipes,
-  createRecipe
+  createRecipe,
+  deleteRecipe
 }
