@@ -15,11 +15,10 @@ const plannerSchema = new Schema(
           type: Schema.Types.ObjectId,
           ref: "Recipe",
         },
-        count: Number
+        count: Number,
       },
     ],
   },
-  { _id: false }
 )
 
 const userSchema = new Schema({
@@ -47,7 +46,8 @@ const userSchema = new Schema({
     weight: Number,
     height: Number,
     age: Number,
-    gender: String
+    gender: String,
+    profilePhoto: String
   }
 })
 

@@ -41,14 +41,11 @@ function Favorites() {
     for (let key of Object.keys(mealPlan)) {
       const meals = mealPlan[key]
       for (let meal of meals) {
-        for(let i=0; i<meal.count; i++) {
-          organizedPlan.meals.push({
-            mealTime: key,
-            meal: meal._id,
-            count: meal.count
-          })
-        }
-        
+        organizedPlan.meals.push({
+          mealTime: key,
+          meal: meal._id,
+          count: meal.count,
+        })
       }
     }
     const res = await fetch("api/users/planner", {
@@ -82,38 +79,37 @@ function Favorites() {
       </div>
       <div className="basis-[28%]">
         <h3 className="text-xl font-bold">Make your day</h3>
-        <p className="text-gray-400">21 June, 2020</p>
-
-        <h3 className="font-bold my-2">Breakfast</h3>
-        <DropContainer
-          favorites={favorites}
-          setTotalCalories={setTotalCalories}
-          totalCalories={totalCalories}
-          name="breakfast"
-          mealPlan={mealPlan}
-          setMealPlan={setMealPlan}
-          loading={loading}
-        />
-        <h3 className="font-bold my-2">Lunch</h3>
-        <DropContainer
-          favorites={favorites}
-          setTotalCalories={setTotalCalories}
-          totalCalories={totalCalories}
-          name="lunch"
-          mealPlan={mealPlan}
-          setMealPlan={setMealPlan}
-          loading={loading}
-        />
-        <h3 className="font-bold my-2">Dinner</h3>
-        <DropContainer
-          favorites={favorites}
-          setTotalCalories={setTotalCalories}
-          totalCalories={totalCalories}
-          name="dinner"
-          mealPlan={mealPlan}
-          setMealPlan={setMealPlan}
-          loading={loading}
-        />
+        <p className="text-gray-400">{new Date().toDateString()}</p>
+          <h3 className="font-bold my-2">Breakfast</h3>
+          <DropContainer
+            favorites={favorites}
+            setTotalCalories={setTotalCalories}
+            totalCalories={totalCalories}
+            name="breakfast"
+            mealPlan={mealPlan}
+            setMealPlan={setMealPlan}
+            loading={loading}
+          />
+          <h3 className="font-bold my-2">Lunch</h3>
+          <DropContainer
+            favorites={favorites}
+            setTotalCalories={setTotalCalories}
+            totalCalories={totalCalories}
+            name="lunch"
+            mealPlan={mealPlan}
+            setMealPlan={setMealPlan}
+            loading={loading}
+          />
+          <h3 className="font-bold my-2">Dinner</h3>
+          <DropContainer
+            favorites={favorites}
+            setTotalCalories={setTotalCalories}
+            totalCalories={totalCalories}
+            name="dinner"
+            mealPlan={mealPlan}
+            setMealPlan={setMealPlan}
+            loading={loading}
+          />
         <button onClick={addToPlan} className="btn mt-5 block ml-auto">
           Add Recipes to Plan
         </button>

@@ -23,14 +23,15 @@ function Login() {
   const onSubmit = async (e) => {
     e.preventDefault()
     const res = await login(username, password)
-    if(res.success) {
+    if (res.success) {
       setAuth({
         isAuthenticated: true,
         token: res.data.token,
         username: res.data.username,
-        email: res.data.email
+        email: res.data.email,
+        profilePhoto: res.data.profilePhoto,
       })
-      navigate('/')
+      navigate("/")
     }
   }
 
@@ -42,18 +43,30 @@ function Login() {
         <label htmlFor="" className="font-bold">
           Username
         </label>
-        <input type="text" name="username" className="input-base mb-5" onChange={onChange} required/>
+        <input
+          type="text"
+          name="username"
+          className="input-base mb-5"
+          onChange={onChange}
+          required
+        />
         <label htmlFor="" className="font-bold">
           Password
         </label>
-        <input type="password" name="password" className="input-base" onChange={onChange} required />
+        <input
+          type="password"
+          name="password"
+          className="input-base"
+          onChange={onChange}
+          required
+        />
         <div className="text-right mb-5">
           <button className="btn text-sm mt-4">Sign in</button>
         </div>
         <Link to="/sign-up">
           Don't you have an account?
           <span className="font-bold hover:border-b hover:border-b-black ml-2">
-          Sign up
+            Sign up
           </span>
         </Link>
       </form>

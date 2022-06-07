@@ -8,7 +8,7 @@ function CalendarPopOver({ event, setUser, user }) {
   const [isOpened, setIsOpened] = useState(false)
   const { auth } = useAuth()
   const { meal } = event
-  
+
   useEffect(() => {
     const closePopOverHandler = (e) => {
       if (popUpRef.current && !popUpRef.current.contains(e.target)) {
@@ -29,9 +29,10 @@ function CalendarPopOver({ event, setUser, user }) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id: meal._id,
+        mealId: meal._id,
         mealTime: event.mealTime,
         date: event.start,
+        _id: event._id
       }),
     })
     const result = await res.json()

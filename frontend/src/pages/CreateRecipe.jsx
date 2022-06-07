@@ -4,13 +4,13 @@ import { MdOutlineAddBox } from "react-icons/md"
 import { useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import { useAuth } from "../context/authContext"
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
-import storage from "../firebase.config"
+import { useFileUpload } from "../hooks/useFileUpload"
 import Spinner from "../components/layout/Spinner"
 
 function CreateRecipe() {
   const { auth } = useAuth()
   const [loading, setLoading] = useState(false)
+  const { uploadFile } = useFileUpload("/images")
   const [formData, setFormData] = useState({
     title: "",
     source: auth.username,
@@ -75,33 +75,10 @@ function CreateRecipe() {
     return setFormData({ ...formData, ingredients: ingredientsCopy })
   }
 
-  const uploadImage = async () => {
-    const fileName = new Date().getTime() + image.name
-    const storageRef = ref(storage, `/images/${fileName}`)
-    const uploadTask = uploadBytesResumable(storageRef, image)
-    const imageUrl = await new Promise((resolve, reject) => {
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {},
-        (error) => {
-          reject(error)
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
-            resolve(downloadUrl)
-          })
-        }
-      )
-    }).catch((error) => {
-      toast.error("Images not uploaded")
-    })
-    return imageUrl
-  }
-
   const onSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-    const imageUrl = await uploadImage()
+    const imageUrl = await uploadFile(image)
     const formDataCopy = { ...formData }
     formDataCopy.image = imageUrl
     const res = await fetch("/api/recipes", {
@@ -248,7 +225,7 @@ function CreateRecipe() {
           </label>
           <input
             type="file"
-            accept="img"
+            accept="image/*"
             name="image"
             onChange={onChange}
             className="w-full p-2 rounded-md bg-inherit border-input border-2"

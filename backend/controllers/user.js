@@ -46,7 +46,11 @@ const login = async (req, res, next) => {
       data: {
         username: user.username,
         email: user.email,
-        token: generateToken(user._id, user.username, user.email),
+        token: generateToken(
+          user._id,
+          user.username,
+          user.email,
+        ),
       },
     })
   } else {
@@ -99,7 +103,6 @@ const getMe = async (req, res, next) => {
 const addToPlanner = async (req, res, next) => {
   const id = req.user._id
   const newPlan = req.body
-
   for (let dailyPlan of newPlan) {
     await User.updateOne(
       { _id: id, "planner.day": new Date(dailyPlan.day) },
@@ -123,27 +126,53 @@ const addToPlanner = async (req, res, next) => {
 }
 
 const removeFromPlanner = async (req, res, next) => {
-  const { id, mealTime, date } = req.body
+  const { mealId, mealTime, date, _id } = req.body
   const { id: userId } = req.user
-  const user = await User.findOneAndUpdate(
+  await User.updateOne(
     {
-      "planner.day": new Date(date),
+      "planner.meals": {
+        $elemMatch: {
+          mealTime: mealTime,
+          meal: mealId,
+          count: { $lte: 1 },
+        },
+      },
       _id: userId,
     },
     {
       $pull: {
-        "planner.$.meals": {
+        "planner.$[filter].meals": {
           mealTime: mealTime,
-          meal: id,
+          meal: mealId,
+          _id: _id,
         },
       },
     },
-    {new: true}
-  ).populate("planner.meals.meal")
+    { arrayFilters: [{ "filter.day": new Date(date) }] }
+  )
+
+  await User.updateOne(
+    {
+      "planner.meals": {
+        $elemMatch: {
+          mealTime: mealTime,
+          meal: mealId,
+          count: { $gt: 1 },
+        },
+      },
+      _id: userId,
+    },
+    {
+      $inc: { "planner.$[filter].meals.$[x].count": -1 },
+    },
+    { arrayFilters: [{ "filter.day": new Date(date) }, { "x._id": _id }] }
+  )
+
+  const user = await User.findById(userId).populate("planner.meals.meal")
   res.status(200).json({
     success: true,
     message: "Recipes deleted successfully from planner.",
-    data: user
+    data: user,
   })
 }
 

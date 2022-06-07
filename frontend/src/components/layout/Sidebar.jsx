@@ -5,18 +5,20 @@ import { MdTrackChanges } from "react-icons/md"
 import { MdAccountCircle } from "react-icons/md"
 import { AiOutlineClose } from "react-icons/ai"
 import { NavLink, Link } from "react-router-dom"
-import { useAuth } from "../../context/authContext"
 import { useEffect, useRef } from "react"
-
+import { useAuth } from "../../context/authContext"
+import { useUser } from "../../hooks/useUser"
 const SidebarItems = [
   { name: "Recipes", icon: GiOpenBook, to: "/" },
   { name: "Favorites", icon: GiHearts, to: "/favorites" },
   { name: "Meal Planner", icon: MdTrackChanges, to: "/planner" },
-  { name: "Profile", icon: MdAccountCircle, to:"/profile" },
+  { name: "Profile", icon: MdAccountCircle, to: "/profile" },
 ]
 
 function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
   const { auth } = useAuth()
+  const { data: user } = useUser()
+
   useEffect(() => {
     const closeSidebar = (e) => {
       if (!sidebarRef.current.contains(e.target)) {
@@ -28,7 +30,9 @@ function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
       document.removeEventListener("mousedown", closeSidebar)
     }
   })
+
   const sidebarRef = useRef()
+
   return (
     <nav
       className={`fixed ${
@@ -49,14 +53,19 @@ function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
         </Link>
       </h3>
       <div className="flex flex-col items-center mt-10 mb-20">
-        <img src={defaultProfile} alt="" className="w-[75px] mb-3" />
-        <h3 className="font-bold">
-          {auth && auth.isAuthenticated ? auth.username : "Default"}
-        </h3>
-        <p className="text-sm text-slate-500 mb-3">Chef</p>
-        <span className="rounded-lg shadow-lg py-1 px-4 align-middle">
-          <GiCook className="inline-block text-primary align-[-2px]" />
-          <span className="leading-5 ml-1 font-bold text-md">37</span>
+        <img
+          src={
+            user
+              ? auth.profilePhoto || user.personalInformation.profilePhoto
+              : defaultProfile
+          }
+          alt=""
+          className="w-[75px] h-[75px] mb-3 rounded-full"
+        />
+        <h3 className="font-bold">{auth.isAuthenticated && auth.username}</h3>
+        <span className="rounded-lg shadow-lg px-4 flex justify-between py-1 mt-2">
+          <GiCook className="inline-block text-primary" />
+          <p className="text-sm text-slate-500 ml-1">Chef</p>
         </span>
       </div>
       <div>
@@ -65,9 +74,18 @@ function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
             to={item.to}
             children={({ isActive }) =>
               isActive ? (
-                <SidebarItem active={true} icon={item.icon} name={item.name} setIsSidebarOpen={setIsSidebarOpen} />
+                <SidebarItem
+                  active={true}
+                  icon={item.icon}
+                  name={item.name}
+                  setIsSidebarOpen={setIsSidebarOpen}
+                />
               ) : (
-                <SidebarItem icon={item.icon} name={item.name} setIsSidebarOpen={setIsSidebarOpen} />
+                <SidebarItem
+                  icon={item.icon}
+                  name={item.name}
+                  setIsSidebarOpen={setIsSidebarOpen}
+                />
               )
             }
             key={idx}

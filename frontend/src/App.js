@@ -23,7 +23,10 @@ function App() {
     <>
       <AuthProvider>
         <BrowserRouter>
-          <Sidebar setIsSidebarOpen={setIsSidebarOpen} isSidebarOpen={isSidebarOpen} />
+          <Sidebar
+            setIsSidebarOpen={setIsSidebarOpen}
+            isSidebarOpen={isSidebarOpen}
+          />
           <div className="bg-body md:ml-[250px] min-h-screen p-10">
             <div className="max-w-[1100px] mx-auto">
               <Header setIsSidebarOpen={setIsSidebarOpen} />

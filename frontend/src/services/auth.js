@@ -1,58 +1,53 @@
 import jwt from "jwt-decode"
 
 const login = async (username, password) => {
-  const res = await fetch('api/users/sign-in', {
-    method: 'POST',
+  const res = await fetch("api/users/sign-in", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json'
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       username,
-      password
-    })
+      password,
+    }),
   })
   const userData = await res.json()
-  if(userData.success) {
-    localStorage.setItem('token', JSON.stringify(userData.data.token))
+  if (userData.success) {
+    localStorage.setItem("token", JSON.stringify(userData.data.token))
   }
   return userData
 }
 
 const register = async (username, email, password) => {
-  const res = await fetch('api/users', {
-    method: 'POST',
+  const res = await fetch("api/users", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json'
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       username,
       email,
-      password
-    })
+      password,
+    }),
   })
   const userData = await res.json()
-  if(userData.success) {
-    localStorage.setItem('token', JSON.stringify(userData.data.token))
+  if (userData.success) {
+    localStorage.setItem("token", JSON.stringify(userData.data.token))
   }
-  
+
   return userData
 }
 
-const logout = () => localStorage.removeItem('token')
+const logout = () =>  localStorage.removeItem("token")
 
 const getAuthData = () => {
-  const token = JSON.parse(localStorage.getItem('token'))
+  const token = JSON.parse(localStorage.getItem("token"))
   try {
     const { username, email } = jwt(token)
     return { username, email, token }
-  } catch(e) {
+  } catch (e) {
     return null
   }
 }
 
-export {
-  register,
-  login,
-  logout,
-  getAuthData
-}
+export { register, login, logout, getAuthData }

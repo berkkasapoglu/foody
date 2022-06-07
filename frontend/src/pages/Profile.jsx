@@ -9,17 +9,20 @@ import { IoManOutline, IoWomanOutline } from "react-icons/io5"
 
 import GenderSelect from "../components/GenderSelect"
 import Spinner from "../components/layout/Spinner"
+import defaultProfile from "../assets/defaultProfile.png"
+import { useFileUpload } from "../hooks/useFileUpload"
 import { toast } from "react-toastify"
 
 function Profile() {
-  const { auth } = useAuth()
+  const { auth, setAuth } = useAuth()
+  const { uploadFile } = useFileUpload("/profile_photos")
   const { data: user, setData: setUser } = useUser()
   const [personalData, setPersonalData] = useState({
     weight: "",
     height: "",
     age: "",
   })
-  
+
   const [isChangeMode, setIsChangeMode] = useState(false)
 
   useEffect(() => {
@@ -35,6 +38,40 @@ function Profile() {
     })
   }
 
+  const updateProfile = async (body) => {
+    const res = await fetch("/api/users", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: "Bearer " + auth.token,
+      },
+      body: JSON.stringify(body),
+    })
+
+    const result = await res.json()
+    if (result.success) {
+      setUser({
+        ...user,
+        personalInformation: {
+          ...personalData,
+          ...body,
+        },
+      })
+    } else {
+      toast.error(result.message)
+    }
+  }
+
+  const handleImageChange = async (e) => {
+    const profilePhotoURL = await toast.promise(uploadFile(e.target.files[0]), {
+      pending: "Profile photo uptading...",
+      success: "Profile photo updated.",
+      error: "Profile photo is not updated.",
+    })
+    updateProfile({ profilePhoto: profilePhotoURL })
+    setAuth({ ...auth, profilePhoto: profilePhotoURL })
+  }
+
   const onSubmit = async () => {
     const updates = {}
     let changed = false
@@ -47,30 +84,10 @@ function Profile() {
         updates[key] = personalData[key]
       }
     }
-    
-    if (changed) {
-      const res = await fetch("/api/users", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: "Bearer " + auth.token,
-        },
-        body: JSON.stringify(updates),
-      })
 
-      const result = await res.json()
-      if (result.success) {
-        toast.success(result.message)
-        setUser({
-          ...user,
-          personalInformation: {
-            ...personalData,
-            ...updates,
-          },
-        })
-      } else {
-        toast.error(result.message)
-      }
+    if (changed) {
+      updateProfile(updates)
+      toast.success("Updated Successfully.")
     }
   }
   if (!user) return <Spinner />
@@ -79,6 +96,30 @@ function Profile() {
       <h3 className="font-bold text-3xl">My Profile</h3>
       <main className="w-full lg:w-[50%]">
         <div className="mt-4 p-5 rounded-lg bg-white">
+          <div className="flex items-center gap-3 mb-4">
+            <img
+              src={
+                personalData.profilePhoto
+                  ? personalData.profilePhoto
+                  : defaultProfile
+              }
+              alt="profile img"
+              className="w-[50px] h-[50px] rounded-full"
+            />
+            <label
+              htmlFor="profile-img-upload"
+              className="font-bold cursor-pointer border px-4 py-2 border-slate-400"
+            >
+              Update Profile Photo
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              id="profile-img-upload"
+              onChange={(e) => handleImageChange(e)}
+            />
+          </div>
           <h4>
             <strong>Username: </strong>
             <span>{user.username}</span>
@@ -127,7 +168,9 @@ function Profile() {
                 } bg-transparent md:w-[60%]`}
                 placeholder="kg"
                 disabled={!isChangeMode}
-                value={`${personalData.weight || 0}${!isChangeMode ? " kg" : ""}`}
+                value={`${personalData.weight || 0}${
+                  !isChangeMode ? " kg" : ""
+                }`}
                 name="weight"
                 onChange={onChange}
               />
@@ -141,7 +184,9 @@ function Profile() {
                 } bg-transparent md:w-[60%]`}
                 placeholder="cm"
                 disabled={!isChangeMode}
-                value={`${personalData.height || 0}${!isChangeMode ? " cm" : ""}`}
+                value={`${personalData.height || 0}${
+                  !isChangeMode ? " cm" : ""
+                }`}
                 name="height"
                 onChange={onChange}
               />

@@ -26,9 +26,9 @@ function Home() {
       setRecipes((currentRecipes) => {
         const isPageReseting = resetPage.current
         resetPage.current = true
-        return isPageReseting ?
-        [...result.data] :
-        [...currentRecipes, ...result.data]
+        return isPageReseting
+          ? [...result.data]
+          : [...currentRecipes, ...result.data]
       })
 
       setLoading(false)
@@ -71,7 +71,7 @@ function Home() {
       </header>
 
       <main className="mt-20">
-        {searchParams.get("search") && (
+        {!loading && searchParams.get("search") && (
           <h3 className="mb-2 font-bold text-2xl text-right">
             Results for "{searchParams.get("search")}"
           </h3>

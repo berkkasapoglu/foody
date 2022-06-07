@@ -19,6 +19,7 @@ const mealTimeStyle = {
 
 const calculateWeeklyStats = (weeklyMeals, personalInformation) => {
   const today = new Date()
+  today.setHours(0,0,0,0)
   const firstDay = new Date(today.setDate(today.getDate() - today.getDay() + 1))
   const lastDay = new Date(today.setDate(today.getDate() - today.getDay() + 7))
   const stats = {
@@ -28,12 +29,13 @@ const calculateWeeklyStats = (weeklyMeals, personalInformation) => {
     totalProteinTaken: 0,
     BMI: 0,
   }
-  const filteredWeeklyMeals = weeklyMeals.filter(meal => {
-    return meal.start>firstDay && meal.end < lastDay
+  const filteredWeeklyMeals = weeklyMeals.filter((meal) => {
+    return meal.start >= firstDay && meal.end <= lastDay
   })
-  
+
+
   filteredWeeklyMeals.length &&
-  filteredWeeklyMeals.forEach((mealData) => {
+    filteredWeeklyMeals.forEach((mealData) => {
       stats.totalCalorieTaken += mealData.meal.calories
       stats.totalFatTaken += mealData.meal.nutritions[0].total
       stats.totalCarbTaken += mealData.meal.nutritions[1].total
@@ -62,13 +64,16 @@ function MealPlanner() {
           if (dailyPlan.meals) {
             dailyPlan.meals.forEach((item) => {
               if (item.meal) {
-                allEvents.push({
-                  title: item.meal.title,
-                  start: moment(dailyPlan.day).toDate(),
-                  end: moment(dailyPlan.day).toDate(),
-                  meal: item.meal,
-                  mealTime: item.mealTime,
-                })
+                for (let i = 0; i < item.count; i++) {
+                  allEvents.push({
+                    title: item.meal.title,
+                    start: moment(dailyPlan.day).toDate(),
+                    end: moment(dailyPlan.day).toDate(),
+                    meal: item.meal,
+                    mealTime: item.mealTime,
+                    _id: item._id
+                  })
+                }
               }
             })
           }
