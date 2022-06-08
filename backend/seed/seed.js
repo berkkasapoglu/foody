@@ -3,6 +3,43 @@ require("dotenv").config(path.resolve(__dirname, "../../.env"))
 const connectDb = require("../config/connectDb")
 const axios = require("axios").default
 const Recipe = require("../models/recipe")
+const { initializeApp } = require("firebase/app")
+const {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} = require("firebase/storage")
+
+const firebaseConfig = {
+  apiKey: process.env.API_KEY,
+  authDomain: process.env.AUTH_DOMAIN,
+  projectId: process.env.PROJECT_ID,
+  storageBucket: process.env.STORAGE_BUCKET,
+  messagingSenderId: process.env.APP_MESSAGING_SENDER_ID,
+  appId: process.env.APP_ID,
+  measurementId: process.env.MEASUREMENT_ID,
+}
+
+const app = initializeApp(firebaseConfig)
+const storage = getStorage(app, process.env.BUCKET_URL)
+
+const uploadImage = async (url) => {
+  const res = await axios.get(url, { responseType: "arraybuffer" })
+  const fileName = new Date().getTime()
+  const storageRef = ref(storage, `images/${fileName}`)
+  const uploadedImageURL = await new Promise((resolve, reject) => {
+    uploadBytes(storageRef, res.data, { contentType: "image/jpeg" }).then(
+      (snapshot) => {
+        getDownloadURL(snapshot.ref).then((uploadedURL) => resolve(uploadedURL))
+      },
+      (err) => {
+        reject(err)
+      }
+    )
+  })
+  return uploadedImageURL
+}
 
 connectDb()
 
@@ -39,10 +76,10 @@ const seedDb = async (category) => {
         for (let i = 0; i < 3; i++) {
           nutritions.push(digest[i])
         }
-
+        const imageUrl = await uploadImage(image)
         const recipe = new Recipe({
           title: label,
-          image: image,
+          image: imageUrl,
           source: source,
           labels: {
             dietLabels: dietLabels,
@@ -53,7 +90,7 @@ const seedDb = async (category) => {
           time: totalTime,
           nutritions: nutritions,
           category: category,
-          difficulty: decideDifficulty(ingredientLines.length)
+          difficulty: decideDifficulty(ingredientLines.length),
         })
         await recipe.save()
         console.log("Recipe data added to db.")
@@ -65,12 +102,12 @@ const seedDb = async (category) => {
 }
 
 const decideDifficulty = (ingredientCount) => {
-  if(ingredientCount > 6) {
-    return 'Hard'
-  } else if(ingredientCount> 3) {
-    return 'Intermediate'
+  if (ingredientCount > 6) {
+    return "Hard"
+  } else if (ingredientCount > 3) {
+    return "Intermediate"
   } else {
-    return 'Easy'
+    return "Easy"
   }
 }
 

@@ -26,3 +26,26 @@
 .rbc-row-content {
   z-index: auto !important;
 }
+
+.react-datepicker__week:hover .react-datepicker__day {
+  border-radius: 3px;
+  color: white;
+  font-weight: bold;
+  background-color: #2579ba;
+} 
+
+.react-datepicker-wrapper {
+  width: auto !important;
+}
+
+.react-datepicker__input-container input {
+  padding: .5rem 2rem;
+  border-radius: .5rem;
+  font-weight: bold;
+  border: 1px solid rgba(0,0,0, .4);
+  cursor: pointer;
+}
+
+.react-datepicker {
+  z-index: 9999 !important;
+}

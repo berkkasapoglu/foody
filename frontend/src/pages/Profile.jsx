@@ -63,11 +63,18 @@ function Profile() {
   }
 
   const handleImageChange = async (e) => {
-    const profilePhotoURL = await toast.promise(uploadFile(e.target.files[0]), {
-      pending: "Profile photo uptading...",
-      success: "Profile photo updated.",
-      error: "Profile photo is not updated.",
-    })
+    const id = toast.loading("Profile photo is uptading...")
+    const profilePhotoURL = await uploadFile(e.target.files[0])
+    if (profilePhotoURL) {
+      toast.update(id, {
+        render: "Profile photo updated",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      })
+    } else {
+      toast.dismiss(id)
+    }
     updateProfile({ profilePhoto: profilePhotoURL })
     setAuth({ ...auth, profilePhoto: profilePhotoURL })
   }

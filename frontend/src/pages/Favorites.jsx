@@ -2,10 +2,12 @@ import FavoriteItem from "../components/FavoriteItem"
 import DropContainer from "../components/DropContainer"
 import Spinner from "../components/layout/Spinner"
 import SortBar from "../components/filters/SortBar"
+
 import { useUser } from "../hooks/useUser"
 import { useState, useEffect } from "react"
 import { useAuth } from "../context/authContext"
 import { useLocalStorage } from "../hooks/useLocalStorage"
+import { useSearchParams } from "react-router-dom"
 
 import moment from "moment"
 import {
@@ -14,7 +16,6 @@ import {
 } from "react-circular-progressbar"
 import "react-circular-progressbar/dist/styles.css"
 import { toast } from "react-toastify"
-import { useSearchParams } from "react-router-dom"
 
 function Favorites() {
   const [searchParams] = useSearchParams()
@@ -80,36 +81,36 @@ function Favorites() {
       <div className="basis-[28%]">
         <h3 className="text-xl font-bold">Make your day</h3>
         <p className="text-gray-400">{new Date().toDateString()}</p>
-          <h3 className="font-bold my-2">Breakfast</h3>
-          <DropContainer
-            favorites={favorites}
-            setTotalCalories={setTotalCalories}
-            totalCalories={totalCalories}
-            name="breakfast"
-            mealPlan={mealPlan}
-            setMealPlan={setMealPlan}
-            loading={loading}
-          />
-          <h3 className="font-bold my-2">Lunch</h3>
-          <DropContainer
-            favorites={favorites}
-            setTotalCalories={setTotalCalories}
-            totalCalories={totalCalories}
-            name="lunch"
-            mealPlan={mealPlan}
-            setMealPlan={setMealPlan}
-            loading={loading}
-          />
-          <h3 className="font-bold my-2">Dinner</h3>
-          <DropContainer
-            favorites={favorites}
-            setTotalCalories={setTotalCalories}
-            totalCalories={totalCalories}
-            name="dinner"
-            mealPlan={mealPlan}
-            setMealPlan={setMealPlan}
-            loading={loading}
-          />
+        <h3 className="font-bold my-2">Breakfast</h3>
+        <DropContainer
+          favorites={favorites}
+          setTotalCalories={setTotalCalories}
+          totalCalories={totalCalories}
+          name="breakfast"
+          mealPlan={mealPlan}
+          setMealPlan={setMealPlan}
+          loading={loading}
+        />
+        <h3 className="font-bold my-2">Lunch</h3>
+        <DropContainer
+          favorites={favorites}
+          setTotalCalories={setTotalCalories}
+          totalCalories={totalCalories}
+          name="lunch"
+          mealPlan={mealPlan}
+          setMealPlan={setMealPlan}
+          loading={loading}
+        />
+        <h3 className="font-bold my-2">Dinner</h3>
+        <DropContainer
+          favorites={favorites}
+          setTotalCalories={setTotalCalories}
+          totalCalories={totalCalories}
+          name="dinner"
+          mealPlan={mealPlan}
+          setMealPlan={setMealPlan}
+          loading={loading}
+        />
         <button onClick={addToPlan} className="btn mt-5 block ml-auto">
           Add Recipes to Plan
         </button>

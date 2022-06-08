@@ -10,7 +10,7 @@ function LineBar({ stat, max, barColor }) {
         strokeColor={barColor}
         trailWidth={6}
       />
-      <div className="flex items-center absolute z-50 font-bold top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] text-primary text-center">
+      <div className="flex items-center absolute z-1 font-bold top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] text-primary text-center">
         <p className="text-sm text-black">
           {stat} g / {max} kcal
         </p>

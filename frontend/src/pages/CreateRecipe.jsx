@@ -65,11 +65,13 @@ function CreateRecipe() {
     setFormData({ ...formData, [e.target.name]: copyData })
   }
 
-  const handleAddIngredient = () => {
+  const handleAddIngredient = (e) => {
+    e.preventDefault()
     return setFormData({ ...formData, ingredients: [...ingredients, ""] })
   }
 
-  const handleRemoveIngredient = (index) => {
+  const handleRemoveIngredient = (index, e) => {
+    e.preventDefault()
     const ingredientsCopy = [...ingredients]
     ingredientsCopy.splice(index, 1)
     return setFormData({ ...formData, ingredients: ingredientsCopy })
@@ -129,7 +131,7 @@ function CreateRecipe() {
             <div className="flex items-center" key={idx}>
               <button
                 className="p-4"
-                onClick={() => handleRemoveIngredient(idx)}
+                onClick={(e) => handleRemoveIngredient(idx, e)}
               >
                 <BsTrash className="text-[#39008f] text-xl transition hover:opacity-70" />
               </button>
@@ -147,7 +149,7 @@ function CreateRecipe() {
           ))}
 
           <button
-            onClick={handleAddIngredient}
+            onClick={(e) => handleAddIngredient(e)}
             className="flex p-4 text-[#39008f] transition hover:opacity-70"
           >
             <MdOutlineAddBox className="text-xl inline-block mr-3" />

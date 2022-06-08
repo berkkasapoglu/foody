@@ -8,6 +8,9 @@ import CalendarPopOver from "../components/planner/CalendarPopOver"
 import SummaryCard from "../components/planner/SummaryCard"
 import LineBar from "../components/planner/LineBar"
 import CircleBar from "../components/planner/CircleBar"
+import DatePicker from "react-datepicker"
+import { AiOutlineCalendar } from "react-icons/ai"
+import "react-datepicker/dist/react-datepicker.css"
 const localizer = momentLocalizer(moment)
 
 const mealTimeStyle = {
@@ -17,11 +20,11 @@ const mealTimeStyle = {
   other: "#E74C3C",
 }
 
-const calculateWeeklyStats = (weeklyMeals, personalInformation) => {
-  const today = new Date()
-  today.setHours(0,0,0,0)
-  const firstDay = new Date(today.setDate(today.getDate() - today.getDay() + 1))
-  const lastDay = new Date(today.setDate(today.getDate() - today.getDay() + 7))
+const calculateWeeklyStats = (
+  weeklyMeals,
+  personalInformation,
+  selectedWeek
+) => {
   const stats = {
     totalCalorieTaken: 0,
     totalFatTaken: 0,
@@ -29,10 +32,12 @@ const calculateWeeklyStats = (weeklyMeals, personalInformation) => {
     totalProteinTaken: 0,
     BMI: 0,
   }
-  const filteredWeeklyMeals = weeklyMeals.filter((meal) => {
-    return meal.start >= firstDay && meal.end <= lastDay
-  })
 
+  const filteredWeeklyMeals = weeklyMeals.filter((meal) => {
+    return (
+      meal.start >= selectedWeek.firstDay && meal.end <= selectedWeek.lastDay
+    )
+  })
 
   filteredWeeklyMeals.length &&
     filteredWeeklyMeals.forEach((mealData) => {
@@ -53,9 +58,17 @@ const calculateWeeklyStats = (weeklyMeals, personalInformation) => {
   stats.needs = needs || {}
   return stats
 }
+
 function MealPlanner() {
   const [meals, setMeals] = useState([])
   const { data: user, setData: setUser } = useUser({})
+  const [selectedDate, setSelectedDate] = useState(new Date())
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const [selectedWeek, setSelectedWeek] = useState({
+    firstDay: new Date(today.setDate(today.getDate() - today.getDay() + 1)),
+    lastDay: new Date(today.setDate(today.getDate() - today.getDay() + 7)),
+  })
   useEffect(() => {
     if (user && user.planner) {
       const getUserEvents = () => {
@@ -71,7 +84,7 @@ function MealPlanner() {
                     end: moment(dailyPlan.day).toDate(),
                     meal: item.meal,
                     mealTime: item.mealTime,
-                    _id: item._id
+                    _id: item._id,
                   })
                 }
               }
@@ -83,9 +96,25 @@ function MealPlanner() {
       getUserEvents()
     }
   }, [user])
+
+  const onWeekSelect = (selected) => {
+    selected.setHours(0, 0, 0, 0)
+    setSelectedDate(new Date(selected))
+    const firstDayOfWeek = new Date(
+      selected.setDate(selected.getDate() - (selected.getDay() - 1))
+    )
+
+    const lastDayOfWeek = new Date(
+      selected.setDate(firstDayOfWeek.getDate() + 6)
+    )
+    setSelectedWeek({
+      firstDay: firstDayOfWeek,
+      lastDay: lastDayOfWeek,
+    })
+  }
   const weeklyStats = useMemo(
-    () => calculateWeeklyStats(meals, user.personalInformation),
-    [meals, user.personalInformation]
+    () => calculateWeeklyStats(meals, user.personalInformation, selectedWeek),
+    [meals, user.personalInformation, selectedWeek]
   )
 
   const eventPropGetter = (event, start, end, isSelected) => {
@@ -132,8 +161,20 @@ function MealPlanner() {
           <h3 className="font-bold">Other</h3>
         </div>
       </div>
-      {}
-      <h3 className="text-2xl font-bold my-5">Weekly Summary</h3>
+      <div className="flex flex-col items-center justify-between my-5 gap-4 md:flex-row">
+        <h3 className="text-2xl font-bold">Weekly Summary</h3>
+        <div className="flex items-center">
+          <h4 className="text-lg font-bold mr-3">Choose Week: </h4>
+          <div className="relative">
+            <AiOutlineCalendar className="text-primary text-xl absolute left-2 top-[50%] -translate-y-[55%] z-20 pointer-events-none" />
+            <DatePicker
+              selected={selectedDate}
+              onChange={onWeekSelect}
+              value={`${selectedWeek.firstDay.toLocaleDateString()} to ${selectedWeek.lastDay.toLocaleDateString()}`}
+            />
+          </div>
+        </div>
+      </div>
       <div className="flex justify-between gap-5 flex-wrap">
         <SummaryCard title="Total Calorie Taken">
           <CircleBar
