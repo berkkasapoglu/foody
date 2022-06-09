@@ -1,6 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom"
 import { useEffect, useState } from "react"
-import headerRecipe from "../assets/headerRecipe.svg"
 import { useAuth } from "../context/authContext"
 import { useFetch } from "../hooks/useFetch"
 import { useUser } from "../hooks/useUser"

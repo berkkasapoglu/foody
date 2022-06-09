@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import { AiOutlineArrowDown } from "react-icons/ai"
 import DropdownMenu from "../layout/DropdownMenu"

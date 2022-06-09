@@ -2,6 +2,7 @@ import { Circle } from "rc-progress"
 
 function CircleBar({ stat, max, barColor, text, checkResult }) {
   const percent = (stat / max) * 100 > 100 ? 100 : (stat / max) * 100
+  
   return (
     <>
       <Circle

@@ -69,10 +69,9 @@ function Home() {
           selectedCategory={selectedCategory}
         />
       </header>
-
       <main className="mt-20">
         {!loading && searchParams.get("search") && (
-          <h3 className="mb-2 font-bold text-2xl text-right">
+          <h3 className="mb-12 font-bold text-2xl text-right">
             Results for "{searchParams.get("search")}"
           </h3>
         )}

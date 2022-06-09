@@ -21,7 +21,7 @@ export const useFileUpload = (path) => {
         }
       )
     }).catch((error) => {
-      toast.error("File is not uploaded.")
+      toast.error(error.message || "File is not uploaded")
     })
     return imageUrl
   }

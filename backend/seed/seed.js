@@ -55,7 +55,7 @@ const seedDb = async (category) => {
       },
     })
     const recipeData = response.data.hits
-    const nextPageLink = response.data._links.next.href
+    // const nextPageLink = response.data._links.next.href
     const page = 1
     for (let i = 0; i < page; i++) {
       recipeData.forEach(async (recipeItems) => {

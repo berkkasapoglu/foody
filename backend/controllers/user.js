@@ -10,9 +10,13 @@ const register = async (req, res, next) => {
     return next(new AppError(401, "Please fill all fields"))
   }
 
-  const userExists = await User.findOne({ email: email })
-  if (userExists) {
-    return next(new AppError(400, "User already exist"))
+  const emailTaken = await User.findOne({ email: email })
+  if (emailTaken) {
+    return next(new AppError(400, "User already exist."))
+  }
+  const usernameTaken = await User.findOne({ username: username })
+  if (usernameTaken) {
+    return next(new AppError(400, "Username is already taken"))
   }
 
   //Hashed before save
@@ -46,11 +50,7 @@ const login = async (req, res, next) => {
       data: {
         username: user.username,
         email: user.email,
-        token: generateToken(
-          user._id,
-          user.username,
-          user.email,
-        ),
+        token: generateToken(user._id, user.username, user.email),
       },
     })
   } else {
@@ -144,6 +144,7 @@ const removeFromPlanner = async (req, res, next) => {
         "planner.$[filter].meals": {
           mealTime: mealTime,
           meal: mealId,
+          count: 1,
           _id: _id,
         },
       },

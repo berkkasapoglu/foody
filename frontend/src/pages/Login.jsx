@@ -3,6 +3,7 @@ import { ReactComponent as LoginLogo } from "../assets/login.svg"
 import { useState } from "react"
 import { login } from "../services/auth"
 import { useAuth } from "../context/authContext"
+import { toast } from "react-toastify"
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -32,6 +33,8 @@ function Login() {
         profilePhoto: res.data.profilePhoto,
       })
       navigate("/")
+    } else {
+      toast.error(res.message)
     }
   }
 

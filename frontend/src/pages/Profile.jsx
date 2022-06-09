@@ -17,17 +17,16 @@ function Profile() {
   const { auth, setAuth } = useAuth()
   const { uploadFile } = useFileUpload("/profile_photos")
   const { data: user, setData: setUser } = useUser()
-  const [personalData, setPersonalData] = useState({
-    weight: "",
-    height: "",
-    age: "",
-  })
+  const [personalData, setPersonalData] = useState({})
 
   const [isChangeMode, setIsChangeMode] = useState(false)
 
   useEffect(() => {
     if (user && user.personalInformation) {
-      setPersonalData(user.personalInformation)
+      setPersonalData({
+        ...personalData,
+        ...user.personalInformation
+      })
     }
   }, [user])
 
@@ -71,6 +70,7 @@ function Profile() {
         type: "success",
         isLoading: false,
         autoClose: 3000,
+        closeOnClick: true
       })
     } else {
       toast.dismiss(id)
@@ -91,8 +91,8 @@ function Profile() {
         updates[key] = personalData[key]
       }
     }
-
-    if (changed) {
+    
+    if (changed && Object.keys(updates).length) {
       updateProfile(updates)
       toast.success("Updated Successfully.")
     }
@@ -175,7 +175,7 @@ function Profile() {
                 } bg-transparent md:w-[60%]`}
                 placeholder="kg"
                 disabled={!isChangeMode}
-                value={`${personalData.weight || 0}${
+                value={`${personalData.weight || ""}${
                   !isChangeMode ? " kg" : ""
                 }`}
                 name="weight"
@@ -191,7 +191,7 @@ function Profile() {
                 } bg-transparent md:w-[60%]`}
                 placeholder="cm"
                 disabled={!isChangeMode}
-                value={`${personalData.height || 0}${
+                value={`${personalData.height || ""}${
                   !isChangeMode ? " cm" : ""
                 }`}
                 name="height"
@@ -206,7 +206,7 @@ function Profile() {
                   isChangeMode && "input-base"
                 } bg-transparent md:w-[60%]`}
                 disabled={!isChangeMode}
-                value={personalData.age || 0}
+                value={personalData.age || ""}
                 name="age"
                 onChange={onChange}
               />

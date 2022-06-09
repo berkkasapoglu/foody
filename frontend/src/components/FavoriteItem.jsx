@@ -1,4 +1,3 @@
-import headerRecipe from "../assets/headerRecipe.svg"
 import {
   AiOutlineMinus,
   AiOutlinePlus,
@@ -8,7 +7,6 @@ import {
 import { GiWaterDrop, GiCurledLeaf, GiCrossedChains } from "react-icons/gi"
 import { Link } from "react-router-dom"
 import { useDrag } from "react-dnd"
-import Recipe from "../pages/Recipe"
 import { useAuth } from "../context/authContext"
 import { toast } from "react-toastify"
 function FavoriteItem({
@@ -23,12 +21,10 @@ function FavoriteItem({
 }) {
   const { auth } = useAuth()
 
-  const [{ isDragging }, drag] = useDrag(() => ({
+  // eslint-disable-next-line
+  const [{ }, drag] = useDrag(() => ({
     type: "recipe",
     item: { id: favorite._id },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
   }))
 
   const { title, calories, nutritions } = favorite
@@ -56,12 +52,11 @@ function FavoriteItem({
       className={`lg:flex justify-between items-center bg-white p-7 rounded-lg shadow-md mb-4 relative`}
     >
       <div className="flex mb-4">
-        {/* <img
+        <img
           src={favorite.image}
-          width={dragged ? 50 : 75}
-          className="rounded-lg"
+          className={`rounded-lg ${dragged ? 'w-[50px] h-[50px]' : 'w-[75px] h-[75px]'}`}
           alt="recipe"
-        /> */}
+        />
         <div className="ml-3">
           <h4 className={`font-bold text-${size}`}>{title}</h4>
           <div className={`text-${size} text-gray-500`}>

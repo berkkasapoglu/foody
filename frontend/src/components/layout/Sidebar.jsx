@@ -32,7 +32,6 @@ function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
   })
 
   const sidebarRef = useRef()
-
   return (
     <nav
       className={`fixed ${

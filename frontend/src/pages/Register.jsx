@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { ReactComponent as RegisterLogo } from "../assets/register.svg"
 import { register } from "../services/auth"
 import { useAuth } from "../context/authContext"
+import { toast } from "react-toastify"
 
 function Register() {
   const navigate = useNavigate()
@@ -24,14 +25,17 @@ function Register() {
   const onSubmit = async (e) => {
     e.preventDefault()
     const res = await register(username, email, password)
-    if(res.success) {
+    if (res.success) {
+      toast.success(`Welcome ${res.data.username}!`)
       setAuth({
         isAuthenticated: true,
         username: res.data.username,
         email: res.data.email,
         token: res.data.token,
       })
-      navigate('/')
+      navigate("/profile")
+    } else {
+      toast.error(res.message)
     }
   }
 

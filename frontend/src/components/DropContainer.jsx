@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { useDrop } from "react-dnd"
 import FavoriteItem from "./FavoriteItem"
 
@@ -21,13 +21,14 @@ function DropContainer({
     }),
     [favorites, totalCalories, droppedItems]
   )
-
+  
   useEffect(() => {
-    setMealPlan({
-      ...mealPlan,
-      [name]: [...droppedItems]
-    })
-  }, [droppedItems])
+    setMealPlan((prevPlan) => {
+      return {
+        ...prevPlan,
+        [name]: [...droppedItems]
+      }})
+  }, [droppedItems, name, setMealPlan])
 
   const addToDropContainer = (id) => {
     const favoritesCopy = favorites.map((favorite) => ({ ...favorite }))
