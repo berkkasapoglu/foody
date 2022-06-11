@@ -1,4 +1,5 @@
-require("dotenv").config()
+const path = require('path')
+require("dotenv").config({ path: path.join(__dirname, '.env') })
 
 const express = require("express")
 const connectDb = require('./config/connectDb')
@@ -9,7 +10,6 @@ const app = express()
 
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
-
 app.use('/api/recipes', require('./routes/recipe'))
 app.use('/api/users', require('./routes/user'))
 
@@ -24,6 +24,6 @@ app.use((err, req, res, next) => {
   })
 })
 
-app.listen(PORT, () => {
+app.listen(process.env.PORT || PORT, () => {
   console.log(`Server listening on port ${PORT}`)
 })
