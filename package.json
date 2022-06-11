@@ -1,7 +1,7 @@
 {
   "name": "foody",
   "version": "1.0.0",
-  "description": "",
+  "description": "A fully functional mern stack web app for recipes, meal planning, and recipe sharing. Users can save recipes and then drag and drop saved recipes into a weekly meal plan. According to added recipes users can check the weekly summary that shows nutrition and calorie counts.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,20 +9,14 @@
     "server": "nodemon backend/app.js",
     "dev": "concurrently \"npm run client\" \"npm run server\""
   },
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/berkkasapoglu/foody.git"
+  },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "axios": "^0.26.1",
-    "bcryptjs": "^2.4.3",
-    "concurrently": "^7.1.0",
-    "dotenv": "^16.0.0",
-    "express": "^4.17.3",
-    "firebase-admin": "^10.2.0",
-    "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.3.0"
+  "bugs": {
+    "url": "https://github.com/berkkasapoglu/foody/issues"
   },
-  "devDependencies": {
-    "firebase": "^9.8.2"
-  }
+  "homepage": "https://github.com/berkkasapoglu/foody#readme"
 }
