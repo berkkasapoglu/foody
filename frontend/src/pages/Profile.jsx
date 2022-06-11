@@ -23,9 +23,11 @@ function Profile() {
 
   useEffect(() => {
     if (user && user.personalInformation) {
-      setPersonalData({
-        ...personalData,
-        ...user.personalInformation
+      setPersonalData((prevPersonalData) => {
+        return {
+          ...prevPersonalData,
+          ...user.personalInformation
+        }
       })
     }
   }, [user])
