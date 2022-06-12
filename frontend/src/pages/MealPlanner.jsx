@@ -175,7 +175,7 @@ function MealPlanner() {
           </div>
         </div>
       </div>
-      <div className="flex justify-between gap-5 flex-wrap">
+      <div className="flex justify-center md:justify-between gap-5 flex-wrap">
         <SummaryCard title="Total Calorie Taken">
           <CircleBar
             stat={weeklyStats.totalCalorieTaken}
@@ -193,10 +193,10 @@ function MealPlanner() {
             max={50}
           />
         </SummaryCard>
-        <div className="flex-1">
+        <div className="flex-1 min-w-[300px]">
           <SummaryCard title="Nutritions">
             <div className="flex gap-2">
-              <h3 className="font-bold min-w-[110px]">Protein</h3>
+              <h3 className="font-bold text-sm md:text-base min-w-[110px]">Protein</h3>
               <LineBar
                 stat={weeklyStats.totalProteinTaken}
                 max={weeklyStats.needs.protein}
@@ -204,7 +204,7 @@ function MealPlanner() {
               />
             </div>
             <div className="flex gap-2">
-              <h3 className="font-bold min-w-[110px]">Carbohydrate</h3>
+              <h3 className="font-bold text-sm md:text-base min-w-[110px]">Carbohydrate</h3>
               <LineBar
                 stat={weeklyStats.totalCarbTaken}
                 max={weeklyStats.needs.carb}
@@ -212,7 +212,7 @@ function MealPlanner() {
               />
             </div>
             <div className="flex gap-2">
-              <h3 className="font-bold min-w-[110px]">Fat</h3>
+              <h3 className="font-bold text-sm md:text-base min-w-[110px]">Fat</h3>
               <LineBar
                 stat={weeklyStats.totalFatTaken}
                 max={weeklyStats.needs.fat}

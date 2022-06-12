@@ -23,25 +23,23 @@ function Header({ setIsSidebarOpen }) {
   }
   return (
     <nav className="flex justify-between items-center">
-      <div className="relative">
-        <div className="flex justify-center items-center">
-          <GiHamburgerMenu
-            className="mr-4 cursor-pointer text-lg transition md:hidden hover:text-primary"
-            onClick={() => setIsSidebarOpen(true)}
+      <div className="flex justify-between items-center">
+        <GiHamburgerMenu
+          className="mr-4 cursor-pointer text-lg transition md:hidden hover:text-primary"
+          onClick={() => setIsSidebarOpen(true)}
+        />
+        <form className="relative w-[175px] md:w-[240px]" onSubmit={handleSearch}>
+          <FiSearch
+            size={17}
+            className="absolute top-0 left-0 translate-y-2/3 pointer-events-none"
           />
-          <form className="relative" onSubmit={handleSearch}>
-            <FiSearch
-              size={17}
-              className="absolute top-0 left-0 translate-y-2/3 pointer-events-none"
-            />
-            <input
-              type="text"
-              placeholder="Enter Recipe..."
-              className="py-2 px-7 border-b-red-200 border-b-2 focus:outline-none focus:border-b-red-700 bg-inherit"
-              ref={searchRef}
-            />
-          </form>
-        </div>
+          <input
+            type="text"
+            placeholder="Enter Recipe..."
+            className="py-2 pl-7 w-[100%] border-b-red-200 border-b-2 focus:outline-none focus:border-b-red-700 bg-inherit"
+            ref={searchRef}
+          />
+        </form>
       </div>
       <div className="flex items-center relative">
         {auth.isAuthenticated ? (

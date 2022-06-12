@@ -47,16 +47,16 @@ function Home() {
     <>
       <header>
         <div className="flex justify-between items-center">
-          <div className="flex items-center">
-            <HeaderRecipe width={250} height={150} />
+          <div className="flex items-center flex-col md:flex-row">
+            <HeaderRecipe className="w-[250px] h-[150px]" />
             <div className="ml-3">
-              <h2 className="font-bold text-4xl md:text-5xl">
+              <h2 className="font-bold text-3xl md:text-5xl">
                 Only the best recipes
               </h2>
               <p className="text-slate-400">Today's new recipes for you</p>
             </div>
           </div>
-          <div>
+          <div className="self-end md:self-center">
             <h3 className="font-bold text-2xl inline-block">
               {recipes.length}+
             </h3>

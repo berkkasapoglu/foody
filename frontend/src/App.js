@@ -12,7 +12,8 @@ import ProtectedRoute from "./components/ProtectedRoute"
 import CreateRecipe from "./pages/CreateRecipe"
 import { AuthProvider } from "./context/authContext"
 import { DndProvider } from "react-dnd"
-import { HTML5Backend } from "react-dnd-html5-backend"
+import MultiBackend from 'react-dnd-multi-backend';
+import HTML5toTouch from 'react-dnd-multi-backend/dist/esm/HTML5toTouch'; // or any other pipeline
 import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { useState } from "react"
@@ -31,7 +32,7 @@ function App() {
             <div className="max-w-[1100px] mx-auto">
               <Header setIsSidebarOpen={setIsSidebarOpen} />
               <div className="mt-12">
-                <DndProvider backend={HTML5Backend}>
+                <DndProvider backend={MultiBackend} options={HTML5toTouch}>
                   <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="category/:categoryName" element={<Home />} />
