@@ -16,6 +16,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: |
+        export GENERATE_SOURCEMAP=false
         cd frontend
         npm i --legacy-peer-deps
         npm run build
