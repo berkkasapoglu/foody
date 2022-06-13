@@ -1,0 +1,25 @@
+name: foody.js CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run:
+      cd frontend
+      npm i --legacy-peer-deps
+      npm run build
+      cd ..
+      cd backend
+      npm i
+      

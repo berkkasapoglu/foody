@@ -14,14 +14,14 @@ function DropContainer({
   const [{ canDrop }, drop] = useDrop(
     () => ({
       accept: "recipe",
-      drop: (item) => addToDropContainer(item.id),
+      drop: (item) => addToDropContainer(item),
       collect: (monitor) => ({
         canDrop: monitor.canDrop(),
       }),
     }),
     [favorites, totalCalories, droppedItems]
   )
-  
+
   useEffect(() => {
     setMealPlan((prevPlan) => {
       return {
@@ -30,14 +30,12 @@ function DropContainer({
       }})
   }, [droppedItems, name, setMealPlan])
 
-  const addToDropContainer = (id) => {
-    const favoritesCopy = favorites.map((favorite) => ({ ...favorite }))
-    const item = favoritesCopy.filter((favorite) => favorite._id === id)
-    const isExist = droppedItems.some((item) => item._id === id)
+  const addToDropContainer = (item) => {
+    const isExist = droppedItems.some((droppedItem) => droppedItem._id === item._id)
     if (!isExist) {
-      setDroppedItems([...droppedItems, item[0]])
+      setDroppedItems([...droppedItems, item])
       setTotalCalories(
-        totalCalories + item[0].count * parseInt(item[0].calories)
+        totalCalories + item.count * parseInt(item.calories)
       )
     }
   }

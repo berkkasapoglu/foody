@@ -17,6 +17,7 @@ import HTML5toTouch from 'react-dnd-multi-backend/dist/esm/HTML5toTouch'; // or 
 import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { useState } from "react"
+import FavoritePreview from "./components/FavoritePreview"
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -33,6 +34,7 @@ function App() {
               <Header setIsSidebarOpen={setIsSidebarOpen} />
               <div className="mt-12">
                 <DndProvider backend={MultiBackend} options={HTML5toTouch}>
+                  <FavoritePreview />
                   <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="category/:categoryName" element={<Home />} />

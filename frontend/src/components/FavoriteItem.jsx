@@ -9,6 +9,21 @@ import { Link } from "react-router-dom"
 import { useDrag } from "react-dnd"
 import { useAuth } from "../context/authContext"
 import { toast } from "react-toastify"
+import { useDragLayer } from "react-dnd"
+import { useEffect } from "react"
+
+const moveBottom = (currentPosition) => {
+  if (currentPosition && currentPosition.y + 50 > window.innerHeight) {
+    window.scrollTo(window.scrollX, window.scrollY + 5)
+  }
+}
+
+const moveTop = (currentPosition) => {    
+  if (currentPosition && currentPosition.y - 70 < 0) {
+    window.scrollTo(window.scrollX, window.scrollY - 5)
+  }
+}
+
 function FavoriteItem({
   favorite,
   dragged,
@@ -18,14 +33,24 @@ function FavoriteItem({
   decreaseCount,
   setFavorites,
   favorites,
+  style,
 }) {
-  const { auth } = useAuth()
 
+  const { auth } = useAuth()
+  const currentPosition = useDragLayer((monitor) => monitor.getClientOffset())
   // eslint-disable-next-line
-  const [{ }, drag] = useDrag(() => ({
+  const [{ isDragging }, drag] = useDrag(() => ({
     type: "recipe",
-    item: { id: favorite._id },
+    item: favorite,
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
   }))
+
+  useEffect(() => {
+    moveBottom(currentPosition)
+    moveTop(currentPosition)
+  }, [currentPosition])
 
   const { title, calories, nutritions } = favorite
   const [fat, carbs, protein] = nutritions
@@ -45,16 +70,21 @@ function FavoriteItem({
       toast.error(result.message)
     }
   }
-
+  
   return (
     <div
       ref={drag}
-      className={`lg:flex justify-between items-center bg-white p-7 rounded-lg shadow-md mb-4 relative`}
+      className={`lg:flex justify-between items-center p-7 rounded-lg shadow-md mb-4 relative ${
+        isDragging ? "bg-body" : "bg-white"
+      }`}
+      style={style}
     >
       <div className="flex mb-4">
         <img
           src={favorite.image}
-          className={`rounded-lg ${dragged ? 'w-[50px] h-[50px]' : 'w-[75px] h-[75px]'}`}
+          className={`rounded-lg ${
+            dragged ? "w-[50px] h-[50px]" : "w-[75px] h-[75px]"
+          }`}
           alt="recipe"
         />
         <div className="ml-3">

@@ -49,16 +49,20 @@ function Favorites() {
         })
       }
     }
-    const res = await fetch("api/users/planner", {
-      method: "POST",
-      headers: {
-        authorization: "Bearer " + auth.token,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify([organizedPlan]),
-    })
-    const result = await res.json()
-    result.success ? toast.success(result.message) : toast.error(result.message)
+    if (organizedPlan.meals.length) {
+      const res = await fetch("api/users/planner", {
+        method: "POST",
+        headers: {
+          authorization: "Bearer " + auth.token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify([organizedPlan]),
+      })
+      const result = await res.json()
+      result.success
+        ? toast.success(result.message)
+        : toast.error(result.message)
+    }
   }
 
   return (
