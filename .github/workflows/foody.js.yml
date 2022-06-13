@@ -15,11 +15,11 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-    - run:
-      cd frontend
-      npm i --legacy-peer-deps
-      npm run build
-      cd ..
-      cd backend
-      npm i
+    - run: |
+        cd frontend
+        npm i --legacy-peer-deps
+        npm run build
+        cd ..
+        cd backend
+        npm i
       
