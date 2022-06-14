@@ -8,7 +8,7 @@ function CalendarPopOver({ event, setUser, user }) {
   const [isOpened, setIsOpened] = useState(false)
   const { auth } = useAuth()
   const { meal } = event
-  console.log(meal)
+
   useEffect(() => {
     const closePopOverHandler = (e) => {
       if (popUpRef.current && !popUpRef.current.contains(e.target)) {
