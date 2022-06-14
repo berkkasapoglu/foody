@@ -8,7 +8,7 @@ function CalendarPopOver({ event, setUser, user }) {
   const [isOpened, setIsOpened] = useState(false)
   const { auth } = useAuth()
   const { meal } = event
-
+  console.log(meal)
   useEffect(() => {
     const closePopOverHandler = (e) => {
       if (popUpRef.current && !popUpRef.current.contains(e.target)) {
@@ -67,11 +67,11 @@ function CalendarPopOver({ event, setUser, user }) {
                     className="mb-3 rounded-md"
                   />
                   <p className="font-bold">Calories: {meal.calories}</p>
-                  <p className="font-bold">Carbs: {meal.nutritions[0].total}</p>
+                  <p className="font-bold">Protein: {meal.nutritions[2].total}</p>
                   <p className="font-bold">
-                    Protein: {meal.nutritions[1].total}
+                    Carbs: {meal.nutritions[1].total}
                   </p>
-                  <p className="font-bold">Fat: {meal.nutritions[2].total}</p>
+                  <p className="font-bold">Fat: {meal.nutritions[0].total}</p>
                 </div>
               </div>
             </Link>
