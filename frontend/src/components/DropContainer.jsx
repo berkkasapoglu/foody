@@ -14,7 +14,7 @@ function DropContainer({
   const [{ canDrop }, drop] = useDrop(
     () => ({
       accept: "recipe",
-      drop: (item) => addToDropContainer(item),
+      drop: (item) => addToDropContainer({...item}),
       collect: (monitor) => ({
         canDrop: monitor.canDrop(),
       }),
