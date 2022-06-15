@@ -3,8 +3,6 @@ name: foody.js CI/CD
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
 
 jobs:
   build:
@@ -20,7 +18,20 @@ jobs:
         export GENERATE_SOURCEMAP=false
         cd frontend
         npm i --legacy-peer-deps
-        npm run build
+    - name: Frontend build
+    - run: npm run build
+      env:
+        REACT_APP_API_KEY: ${{ secrets.REACT_APP_API_KEY }}
+        REACT_APP_APP_ID: ${{ secrets.REACT_APP_APP_ID }}
+        REACT_APP_AUTH_DOMAIN: ${{ secrets.REACT_APP_AUTH_DOMAIN }}
+        REACT_APP_BUCKET_URL: ${{ secrets.REACT_APP_BUCKET_URL }}
+        REACT_APP_MEASUREMENT_ID: ${{ secrets.REACT_APP_MEASUREMENT_ID }}
+        REACT_APP_MESSAGING_SENDER_ID: ${{ secrets.REACT_APP_MESSAGING_SENDER_ID }}
+        REACT_APP_PROJECT_ID: ${{ secrets.REACT_APP_PROJECT_ID }}
+        REACT_APP_STORAGE_BUCKET: ${{ secrets.REACT_APP_STORAGE_BUCKET }}
+    - name: Backend setup
+    - run: |
         cd ..
         cd backend
         npm i
+        
