@@ -20,6 +20,7 @@ jobs:
         npm i --legacy-peer-deps
     - name: Frontend build
       run: npm run build
+      working-directory: frontend
       env:
         REACT_APP_API_KEY: ${{ secrets.REACT_APP_API_KEY }}
         REACT_APP_APP_ID: ${{ secrets.REACT_APP_APP_ID }}
@@ -31,7 +32,6 @@ jobs:
         REACT_APP_STORAGE_BUCKET: ${{ secrets.REACT_APP_STORAGE_BUCKET }}
     - name: Backend setup
       run: |
-        cd ..
         cd backend
         npm i
         
