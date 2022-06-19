@@ -83,7 +83,7 @@ function Favorites() {
         )}
       </div>
       <div className="basis-[28%]">
-        <h3 className="text-xl font-bold">Make your day</h3>
+        <h2 className="text-xl font-bold">Make your day</h2>
         <p className="text-gray-400">{new Date().toDateString()}</p>
         <h3 className="font-bold my-2">Breakfast</h3>
         <DropContainer

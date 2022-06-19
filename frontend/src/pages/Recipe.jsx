@@ -87,7 +87,7 @@ function Recipe() {
               <p className="text-primary text-sm font-bold">
                 Chef: {recipe.source}
               </p>
-              <h3 className="text-4xl pb-3">{recipe.title}</h3>
+              <h1 className="text-4xl pb-3">{recipe.title}</h1>
             </div>
           </div>
           <div>
@@ -127,7 +127,7 @@ function Recipe() {
             ))}
           </div>
           <div>
-            <h3 className="text-lg font-bold mt-5">Ingredients</h3>
+            <h2 className="text-lg font-bold mt-5">Ingredients</h2>
             <ul>
               {recipe.ingredients.map((item, idx) => (
                 <li key={idx}>

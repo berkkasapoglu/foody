@@ -61,7 +61,7 @@ function CalendarPopOver({ event, setUser, user }) {
                 <div>
                   <img
                     src={meal.image ? meal.image : headerRecipe}
-                    alt=""
+                    alt="meal"
                     width={50}
                     height={50}
                     className="mb-3 rounded-md"

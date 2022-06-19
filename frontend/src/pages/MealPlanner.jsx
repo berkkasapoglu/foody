@@ -162,7 +162,7 @@ function MealPlanner() {
         </div>
       </div>
       <div className="flex flex-col items-center justify-between my-5 gap-4 md:flex-row">
-        <h3 className="text-2xl font-bold">Weekly Summary</h3>
+        <h1 className="text-2xl font-bold">Weekly Summary</h1>
         <div className="flex items-center">
           <h4 className="text-lg font-bold mr-3">Choose Week: </h4>
           <div className="relative">

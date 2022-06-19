@@ -58,7 +58,7 @@ function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
               ? auth.profilePhoto || user.personalInformation.profilePhoto
               : defaultProfile
           }
-          alt=""
+          alt="profile"
           className="w-[75px] h-[75px] mb-3 rounded-full"
         />
         <h3 className="font-bold">{auth.isAuthenticated && auth.username}</h3>
