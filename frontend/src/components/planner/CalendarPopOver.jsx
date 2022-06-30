@@ -15,6 +15,7 @@ function CalendarPopOver({ event, setUser, user }) {
         setIsOpened(false)
       }
     }
+
     document.addEventListener("mousedown", closePopOverHandler)
     return () => {
       document.removeEventListener("mousedown", closePopOverHandler)
@@ -45,6 +46,10 @@ function CalendarPopOver({ event, setUser, user }) {
   }
 
   const popUpRef = useRef()
+  const [calories, fat, carbs, protein] =
+  meal.nutritions.filter((nutrition) =>
+    ["Calories", "Fat", "Carbohydrate", "Protein"].includes(nutrition.label)
+  )
 
   return (
     <>
@@ -55,23 +60,23 @@ function CalendarPopOver({ event, setUser, user }) {
             className="absolute bg-white rounded-md translate-y-[8%] text-black p-3 z-50"
             ref={popUpRef}
           >
-            <Link to={`/recipes/${meal._id}`}>
+            <Link to={`/recipes/${meal.slug}`}>
               <div>
                 <h3 className="font-bold">{meal.title}</h3>
                 <div>
                   <img
-                    src={meal.image ? meal.image : headerRecipe}
+                    src={meal.image ? meal.image.lowQuality : headerRecipe}
                     alt="meal"
                     width={50}
                     height={50}
                     className="mb-3 rounded-md"
                   />
-                  <p className="font-bold">Calories: {meal.calories}</p>
-                  <p className="font-bold">Protein: {meal.nutritions[2].total}</p>
+                  <p className="font-bold">Calories: {calories.total}</p>
+                  <p className="font-bold">Protein: {protein.total}</p>
                   <p className="font-bold">
-                    Carbs: {meal.nutritions[1].total}
+                    Carbs: {carbs.total}
                   </p>
-                  <p className="font-bold">Fat: {meal.nutritions[0].total}</p>
+                  <p className="font-bold">Fat: {fat.total}</p>
                 </div>
               </div>
             </Link>

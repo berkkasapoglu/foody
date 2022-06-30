@@ -14,7 +14,10 @@ module.exports = {
         "primary-600": "#7b1e17",
         input: 'rgb(234 104 126 / 30%)',
         label: 'rgb(234 104 126)'
-      }
+      } 
+    },
+    fontFamily: {
+      "direction": ["Lobster"]
     },
 
     safelist: ['bg-[#1ABC9C]']

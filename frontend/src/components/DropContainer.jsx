@@ -32,10 +32,11 @@ function DropContainer({
 
   const addToDropContainer = (item) => {
     const isExist = droppedItems.some((droppedItem) => droppedItem._id === item._id)
+    const calories = item.nutritions.find(nutrition => nutrition.label === "Calories")
     if (!isExist) {
       setDroppedItems([...droppedItems, item])
       setTotalCalories(
-        totalCalories + item.count * parseInt(item.calories)
+        totalCalories + item.count * parseInt(calories.total)
       )
     }
   }
@@ -46,30 +47,33 @@ function DropContainer({
       if (item._id === id) removedItem = item
       return item._id !== id
     })
+    const calories = removedItem.nutritions.find(nutrition => nutrition.label === "Calories")
     setDroppedItems(newContainer)
     setTotalCalories(
-      totalCalories - removedItem.count * parseInt(removedItem.calories)
+      totalCalories - removedItem.count * parseInt(calories.total)
     )
   }
 
   const increaseCount = (id) => {
     const droppedItemsCopy = [...droppedItems]
     const item = droppedItemsCopy.find((item) => item._id === id)
+    const calories = item.nutritions.find(nutrition => nutrition.label === "Calories")
     item.count += 1
     setDroppedItems(droppedItemsCopy)
-    setTotalCalories(totalCalories + parseInt(item.calories))
+    setTotalCalories(totalCalories + parseInt(calories.total))
   }
 
   const decreaseCount = (id) => {
     const droppedItemsCopy = [...droppedItems]
     const item = droppedItemsCopy.find((item) => item._id === id)
+    const calories = item.nutritions.find(nutrition => nutrition.label === "Calories")
     if (item.count > 1) {
       item.count -= 1
       setDroppedItems(droppedItemsCopy)
     } else {
       setDroppedItems(droppedItemsCopy.filter((item) => item._id !== id))
     }
-    setTotalCalories(totalCalories - parseInt(item.calories))
+    setTotalCalories(totalCalories - parseInt(calories.total))
   }
 
   return (

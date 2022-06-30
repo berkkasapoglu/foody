@@ -1,21 +1,18 @@
 import { useAuth } from "../context/authContext"
 import { useEffect, useState } from "react"
 import { useUser } from "../hooks/useUser"
-import { Link } from "react-router-dom"
 
-import { GiChefToque } from "react-icons/gi"
-import { AiOutlineRight } from "react-icons/ai"
 import { IoManOutline, IoWomanOutline } from "react-icons/io5"
 
 import GenderSelect from "../components/GenderSelect"
 import Spinner from "../components/layout/Spinner"
 import defaultProfile from "../assets/defaultProfile.png"
-import { useFileUpload } from "../hooks/useFileUpload"
 import { toast } from "react-toastify"
+import MetaDecorator from "../components/MetaDecorator"
+import metadata from "../metadata.json"
 
 function Profile() {
   const { auth, setAuth } = useAuth()
-  const { uploadFile } = useFileUpload("/profile_photos")
   const { data: user, setData: setUser } = useUser()
   const [personalData, setPersonalData] = useState({})
 
@@ -26,7 +23,7 @@ function Profile() {
       setPersonalData((prevPersonalData) => {
         return {
           ...prevPersonalData,
-          ...user.personalInformation
+          ...user.personalInformation,
         }
       })
     }
@@ -40,13 +37,16 @@ function Profile() {
   }
 
   const updateProfile = async (body) => {
+    const formData = new FormData()
+    for (const key in body) {
+      formData.append(key, body[key])
+    }
     const res = await fetch("/api/users", {
       method: "PATCH",
       headers: {
-        "Content-Type": "application/json",
         authorization: "Bearer " + auth.token,
       },
-      body: JSON.stringify(body),
+      body: formData,
     })
 
     const result = await res.json()
@@ -58,6 +58,7 @@ function Profile() {
           ...body,
         },
       })
+      return result
     } else {
       toast.error(result.message)
     }
@@ -65,20 +66,19 @@ function Profile() {
 
   const handleImageChange = async (e) => {
     const id = toast.loading("Profile photo is uptading...")
-    const profilePhotoURL = await uploadFile(e.target.files[0])
-    if (profilePhotoURL) {
+    const profile = await updateProfile({ image: e.target.files[0] })
+    if (profile) {
       toast.update(id, {
         render: "Profile photo updated",
         type: "success",
         isLoading: false,
         autoClose: 3000,
-        closeOnClick: true
+        closeOnClick: true,
       })
+      setAuth({ ...auth, profilePhoto: profile.profilePhoto })
     } else {
       toast.dismiss(id)
     }
-    updateProfile({ profilePhoto: profilePhotoURL })
-    setAuth({ ...auth, profilePhoto: profilePhotoURL })
   }
 
   const onSubmit = async () => {
@@ -93,7 +93,7 @@ function Profile() {
         updates[key] = personalData[key]
       }
     }
-    
+
     if (changed && Object.keys(updates).length) {
       updateProfile(updates)
       toast.success("Updated Successfully.")
@@ -102,6 +102,11 @@ function Profile() {
   if (!user) return <Spinner />
   return (
     <>
+      <MetaDecorator
+        title="Foodie | Profile"
+        description={metadata.baseDescription}
+        url={metadata.sitename + `/profile`}
+      />
       <h3 className="font-bold text-3xl">My Profile</h3>
       <main className="w-full lg:w-[50%]">
         <div className="mt-4 p-5 rounded-lg bg-white">
@@ -214,17 +219,6 @@ function Profile() {
               />
             </div>
           </div>
-        </div>
-        <div>
-          <Link to="/recipes/new">
-            <div className="mt-8 p-5 font-bold bg-white rounded-lg">
-              <div className="flex justify-between items-center cursor-pointer">
-                <GiChefToque />
-                <p>Create New Recipe</p>
-                <AiOutlineRight />
-              </div>
-            </div>
-          </Link>
         </div>
       </main>
     </>

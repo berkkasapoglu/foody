@@ -1,6 +1,7 @@
 const AppError = require("../utils/AppError")
 const jwt = require("jsonwebtoken")
 const User = require("../models/user")
+const { userSchema } = require("../validationSchemas")
 
 const auth = async (req, res, next) => {
   let token
@@ -29,6 +30,18 @@ const auth = async (req, res, next) => {
   }
 }
 
+validateUser = (req, res, next) => {
+  const { error } = userSchema.validate(req.body)
+  if (error) {
+    const errorMessage = error.details.map(detail => detail.message).join()
+    return res.status(400).json({
+      success: false,
+      message: errorMessage,
+    })
+  }
+  next()
+}
+
 const generateSortQuery = (sort) => {
   let sortCategory, sortType
   if (sort) {
@@ -36,7 +49,10 @@ const generateSortQuery = (sort) => {
     sortCategory = fields[0]
     sortType = fields[2] === "asc" ? "" : "-"
   }
-  return sortType+sortCategory
+  return sortType + sortCategory
 }
 
-module.exports = auth
+module.exports = {
+  auth,
+  validateUser,
+}

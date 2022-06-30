@@ -10,6 +10,8 @@ import LineBar from "../components/planner/LineBar"
 import CircleBar from "../components/planner/CircleBar"
 import DatePicker from "react-datepicker"
 import { AiOutlineCalendar } from "react-icons/ai"
+import MetaDecorator from "../components/MetaDecorator"
+import metadata from "../metadata.json"
 import "react-datepicker/dist/react-datepicker.css"
 const localizer = momentLocalizer(moment)
 
@@ -39,13 +41,21 @@ const calculateWeeklyStats = (
     )
   })
 
-  filteredWeeklyMeals.length &&
+  if (filteredWeeklyMeals.length) {
     filteredWeeklyMeals.forEach((mealData) => {
-      stats.totalCalorieTaken += mealData.meal.calories
-      stats.totalFatTaken += mealData.meal.nutritions[0].total
-      stats.totalCarbTaken += mealData.meal.nutritions[1].total
-      stats.totalProteinTaken += mealData.meal.nutritions[2].total
+      const [calories, fat, carbs, protein] = mealData.meal.nutritions.filter(
+        (nutrition) =>
+          ["Calories", "Fat", "Carbohydrate", "Protein"].includes(
+            nutrition.label
+          )
+      )
+      stats.totalCalorieTaken += parseInt(calories.total)
+      stats.totalFatTaken += parseInt(fat.total)
+      stats.totalCarbTaken += parseInt(carbs.total)
+      stats.totalProteinTaken += parseInt(protein.total)
     })
+  }
+
   if (personalInformation) {
     const { height, weight } = personalInformation
     if (height && weight) {
@@ -127,102 +137,115 @@ function MealPlanner() {
   }
 
   return (
-    <div>
-      <Calendar
-        defaultView="month"
-        localizer={localizer}
-        startAccessor="start"
-        endAccessor="end"
-        resizable
-        events={meals}
-        style={{ height: "70vh", fontSize: ".8rem" }}
-        eventPropGetter={eventPropGetter}
-        components={{
-          event: (props) => (
-            <CalendarPopOver {...props} user={user} setUser={setUser} />
-          ),
-        }}
+    <>
+      <MetaDecorator
+        title={`Foodie | Meal Planner`}
+        description={metadata.baseDescription}
+        url={metadata.sitename + "/planner"}
       />
-      <div className="flex justify-end gap-3 mt-2">
-        <div className="inline-flex items-center gap-1">
-          <div className={`w-[8px] h-[8px] bg-[#1ABC9C] rounded-full`}></div>
-          <h3 className="font-bold">Breakfast</h3>
+      <div>
+        <Calendar
+          defaultView="month"
+          localizer={localizer}
+          startAccessor="start"
+          endAccessor="end"
+          resizable
+          events={meals}
+          style={{ height: "70vh", fontSize: ".8rem" }}
+          eventPropGetter={eventPropGetter}
+          components={{
+            event: (props) => (
+              <CalendarPopOver {...props} user={user} setUser={setUser} />
+            ),
+          }}
+        />
+        <div className="flex justify-end gap-3 mt-2">
+          <div className="inline-flex items-center gap-1">
+            <div className={`w-[8px] h-[8px] bg-[#1ABC9C] rounded-full`}></div>
+            <h3 className="font-bold">Breakfast</h3>
+          </div>
+          <div className="inline-flex items-center gap-1">
+            <div className={`w-[8px] h-[8px] bg-[#3498DB] rounded-full`}></div>
+            <h3 className="font-bold">Lunch</h3>
+          </div>
+          <div className="inline-flex items-center gap-1">
+            <div className={`w-[8px] h-[8px] bg-[#E74C3C] rounded-full`}></div>
+            <h3 className="font-bold">Dinner</h3>
+          </div>
+          <div className="inline-flex items-center gap-1">
+            <div className={`w-[8px] h-[8px] bg-[#E74C3C] rounded-full`}></div>
+            <h3 className="font-bold">Other</h3>
+          </div>
         </div>
-        <div className="inline-flex items-center gap-1">
-          <div className={`w-[8px] h-[8px] bg-[#3498DB] rounded-full`}></div>
-          <h3 className="font-bold">Lunch</h3>
+        <div className="flex flex-col items-center justify-between my-5 gap-4 md:flex-row">
+          <h1 className="text-2xl font-bold">Weekly Summary</h1>
+          <div className="flex items-center">
+            <h4 className="text-lg font-bold mr-3">Choose Week: </h4>
+            <div className="relative">
+              <AiOutlineCalendar className="text-primary text-xl absolute left-2 top-[50%] -translate-y-[55%] z-20 pointer-events-none" />
+              <DatePicker
+                selected={selectedDate}
+                onChange={onWeekSelect}
+                value={`${selectedWeek.firstDay.toLocaleDateString()} to ${selectedWeek.lastDay.toLocaleDateString()}`}
+              />
+            </div>
+          </div>
         </div>
-        <div className="inline-flex items-center gap-1">
-          <div className={`w-[8px] h-[8px] bg-[#E74C3C] rounded-full`}></div>
-          <h3 className="font-bold">Dinner</h3>
-        </div>
-        <div className="inline-flex items-center gap-1">
-          <div className={`w-[8px] h-[8px] bg-[#E74C3C] rounded-full`}></div>
-          <h3 className="font-bold">Other</h3>
-        </div>
-      </div>
-      <div className="flex flex-col items-center justify-between my-5 gap-4 md:flex-row">
-        <h1 className="text-2xl font-bold">Weekly Summary</h1>
-        <div className="flex items-center">
-          <h4 className="text-lg font-bold mr-3">Choose Week: </h4>
-          <div className="relative">
-            <AiOutlineCalendar className="text-primary text-xl absolute left-2 top-[50%] -translate-y-[55%] z-20 pointer-events-none" />
-            <DatePicker
-              selected={selectedDate}
-              onChange={onWeekSelect}
-              value={`${selectedWeek.firstDay.toLocaleDateString()} to ${selectedWeek.lastDay.toLocaleDateString()}`}
+        <div className="flex justify-center md:justify-between gap-5 flex-wrap">
+          <SummaryCard title="Total Calorie Taken">
+            <CircleBar
+              stat={weeklyStats.totalCalorieTaken}
+              text="Kcal"
+              barColor="rgba(219,53,41)"
+              max={weeklyStats.needs.calorie}
             />
+          </SummaryCard>
+          <SummaryCard title="Body Mass Index">
+            <CircleBar
+              stat={weeklyStats.BMI}
+              checkResult={checkBMI(weeklyStats.BMI)}
+              text="BMI"
+              barColor={mealTimeStyle.breakfast}
+              max={50}
+            />
+          </SummaryCard>
+          <div className="flex-1 min-w-[300px]">
+            <SummaryCard title="Nutritions">
+              <div className="flex gap-2">
+                <h3 className="font-bold text-sm md:text-base min-w-[110px]">
+                  Protein
+                </h3>
+                <LineBar
+                  stat={weeklyStats.totalProteinTaken}
+                  max={weeklyStats.needs.protein}
+                  barColor={mealTimeStyle.breakfast}
+                />
+              </div>
+              <div className="flex gap-2">
+                <h3 className="font-bold text-sm md:text-base min-w-[110px]">
+                  Carbohydrate
+                </h3>
+                <LineBar
+                  stat={weeklyStats.totalCarbTaken}
+                  max={weeklyStats.needs.carb}
+                  barColor={mealTimeStyle.lunch}
+                />
+              </div>
+              <div className="flex gap-2">
+                <h3 className="font-bold text-sm md:text-base min-w-[110px]">
+                  Fat
+                </h3>
+                <LineBar
+                  stat={weeklyStats.totalFatTaken}
+                  max={weeklyStats.needs.fat}
+                  barColor={mealTimeStyle.dinner}
+                />
+              </div>
+            </SummaryCard>
           </div>
         </div>
       </div>
-      <div className="flex justify-center md:justify-between gap-5 flex-wrap">
-        <SummaryCard title="Total Calorie Taken">
-          <CircleBar
-            stat={weeklyStats.totalCalorieTaken}
-            text="Kcal"
-            barColor="rgba(219,53,41)"
-            max={weeklyStats.needs.calorie}
-          />
-        </SummaryCard>
-        <SummaryCard title="Body Mass Index">
-          <CircleBar
-            stat={weeklyStats.BMI}
-            checkResult={checkBMI(weeklyStats.BMI)}
-            text="BMI"
-            barColor={mealTimeStyle.breakfast}
-            max={50}
-          />
-        </SummaryCard>
-        <div className="flex-1 min-w-[300px]">
-          <SummaryCard title="Nutritions">
-            <div className="flex gap-2">
-              <h3 className="font-bold text-sm md:text-base min-w-[110px]">Protein</h3>
-              <LineBar
-                stat={weeklyStats.totalProteinTaken}
-                max={weeklyStats.needs.protein}
-                barColor={mealTimeStyle.breakfast}
-              />
-            </div>
-            <div className="flex gap-2">
-              <h3 className="font-bold text-sm md:text-base min-w-[110px]">Carbohydrate</h3>
-              <LineBar
-                stat={weeklyStats.totalCarbTaken}
-                max={weeklyStats.needs.carb}
-                barColor={mealTimeStyle.lunch}
-              />
-            </div>
-            <div className="flex gap-2">
-              <h3 className="font-bold text-sm md:text-base min-w-[110px]">Fat</h3>
-              <LineBar
-                stat={weeklyStats.totalFatTaken}
-                max={weeklyStats.needs.fat}
-                barColor={mealTimeStyle.dinner}
-              />
-            </div>
-          </SummaryCard>
-        </div>
-      </div>
-    </div>
+    </>
   )
 }
 

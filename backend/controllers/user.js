@@ -3,16 +3,13 @@ const Recipe = require("../models/recipe")
 const AppError = require("../utils/AppError")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
+const { imageUpload } = require("../helpers")
 
 const register = async (req, res, next) => {
   const { username, password, email } = req.body
-  if (!username || !password || !email) {
-    return next(new AppError(401, "Please fill all fields"))
-  }
-
   const emailTaken = await User.findOne({ email: email })
   if (emailTaken) {
-    return next(new AppError(400, "User already exist."))
+    return next(new AppError(400, "Email is already taken."))
   }
   const usernameTaken = await User.findOne({ username: username })
   if (usernameTaken) {
@@ -65,9 +62,9 @@ const generateToken = (id, username, email) => {
 }
 
 const addToFavorites = async (req, res, next) => {
-  const { recipeId } = req.params
+  const { slug } = req.params
   const userId = req.user._id
-  const recipe = await Recipe.findById(recipeId)
+  const recipe = await Recipe.findOne({ slug })
   if (recipe) {
     await User.findByIdAndUpdate(userId, { $push: { favorites: recipe._id } })
     return res.status(200).json({
@@ -79,9 +76,9 @@ const addToFavorites = async (req, res, next) => {
 }
 
 const removeFromFavorites = async (req, res, next) => {
-  const { recipeId } = req.params
+  const { slug } = req.params
   const userId = req.user._id
-  const recipe = await Recipe.findById(recipeId)
+  const recipe = await Recipe.findOne({ slug })
   if (recipe) {
     await User.findByIdAndUpdate(userId, { $pull: { favorites: recipe._id } })
     res.status(200).json({
@@ -183,13 +180,27 @@ const updatePersonalInformation = async (req, res, next) => {
   for (const [key, value] of Object.entries(req.body)) {
     updatedFields["personalInformation." + key] = value
   }
+  let image
+  if (req.file) {
+    image = await imageUpload(req.file, "foodie/profile-photos")
+    if (image) updatedFields["personalInformation.profilePhoto"] = image.url
+    else
+      return res.status(500).json({
+        success: false,
+        message: "Image Upload Failed.",
+      })
+  }
+
   await User.findByIdAndUpdate(id, {
     ...updatedFields,
   })
-  res.status(200).json({
+
+  const responseObject = {
     success: true,
     message: "Updated successfully.",
-  })
+  }
+  if (image) responseObject.profilePhoto = image.url
+  res.status(200).json(responseObject)
 }
 
 module.exports = {

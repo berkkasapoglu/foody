@@ -4,19 +4,23 @@ import { MdOutlineAddBox } from "react-icons/md"
 import { useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import { useAuth } from "../context/authContext"
-import { useFileUpload } from "../hooks/useFileUpload"
 import Spinner from "../components/layout/Spinner"
+import MetaDecorator from "../components/MetaDecorator"
+import metadata from "../metadata.json"
 
 function CreateRecipe() {
   const { auth } = useAuth()
   const [loading, setLoading] = useState(false)
-  const { uploadFile } = useFileUpload("/images")
   const [formData, setFormData] = useState({
     title: "",
-    source: auth.username,
-    calories: "",
-    category: "",
+    description: "",
+    ingredients: [""],
     nutritions: [
+      {
+        label: "Calories",
+        total: "",
+        unit: "kcal",
+      },
       {
         label: "Protein",
         total: "",
@@ -28,19 +32,31 @@ function CreateRecipe() {
         unit: "g",
       },
       {
-        label: "Carbs",
+        label: "Carbohydrate",
         total: "",
         unit: "g",
       },
     ],
+    instructions: [""],
+    yields: "",
+    category: "",
     image: "",
-    ingredients: [""],
-    difficulty: "Easy",
+    time: "",
   })
 
   const navigate = useNavigate()
 
-  const { title, ingredients, calories, nutritions, image } = formData
+  const {
+    title,
+    ingredients,
+    nutritions,
+    image,
+    description,
+    instructions,
+    yields,
+    category,
+    time,
+  } = formData
   const onChange = (e) => {
     if (e.target.type === "file") {
       setFormData({
@@ -65,30 +81,36 @@ function CreateRecipe() {
     setFormData({ ...formData, [e.target.name]: copyData })
   }
 
-  const handleAddIngredient = (e) => {
+  const handleAddInput = (e, key) => {
     e.preventDefault()
-    return setFormData({ ...formData, ingredients: [...ingredients, ""] })
+    return setFormData({ ...formData, [key]: [...formData[key], ""] })
   }
 
-  const handleRemoveIngredient = (index, e) => {
+  const handleRemoveInput = (index, e, key) => {
     e.preventDefault()
-    const ingredientsCopy = [...ingredients]
-    ingredientsCopy.splice(index, 1)
-    return setFormData({ ...formData, ingredients: ingredientsCopy })
+    const dataCopy = [...formData[key]]
+    dataCopy.splice(index, 1)
+    return setFormData({ ...formData, [key]: dataCopy })
   }
 
   const onSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-    const imageUrl = await uploadFile(image)
+    const submittedForm = new FormData()
     const formDataCopy = { ...formData }
-    formDataCopy.image = imageUrl
+    formDataCopy["instructions"] = formDataCopy["instructions"].join("\n")
+    for (const key in formDataCopy) {
+      if (key !== "image")
+        submittedForm.append(key, JSON.stringify(formDataCopy[key]))
+    }
+
+    if (image) submittedForm.append("image", image)
+
     const res = await fetch("/api/recipes", {
       method: "POST",
-      body: JSON.stringify(formDataCopy),
+      body: submittedForm,
       headers: {
         authorization: "Bearer " + auth.token,
-        "Content-Type": "application/json",
       },
     })
     const result = await res.json()
@@ -103,6 +125,12 @@ function CreateRecipe() {
 
   return (
     <>
+          <MetaDecorator
+        title={`Foodie | Recipes - Meal Planner`}
+
+        description={metadata.baseDescription}
+        url={metadata.sitename + "/recipes/new"}
+      />
       <h3 className="font-bold text-4xl">Create New Recipe</h3>
       <form action="" className="mt-8" onSubmit={onSubmit}>
         <div className="mb-4">
@@ -123,6 +151,23 @@ function CreateRecipe() {
             required
           />
         </div>
+        <div className="mb-4">
+          <label
+            htmlFor="description"
+            className="block text-label font-bold text-lg mb-2"
+          >
+            Description
+          </label>
+          <textarea
+            name="description"
+            id="description"
+            placeholder="A brief summary of the recipe"
+            className="input-base"
+            value={description}
+            onChange={onChange}
+            required
+          />
+        </div>
         <div>
           <h3 className="block text-label font-bold text-lg mb-2">
             List of Ingredients
@@ -131,7 +176,7 @@ function CreateRecipe() {
             <div className="flex items-center" key={idx}>
               <button
                 className="p-4"
-                onClick={(e) => handleRemoveIngredient(idx, e)}
+                onClick={(e) => handleRemoveInput(idx, e, "ingredients")}
               >
                 <BsTrash className="text-[#39008f] text-xl transition hover:opacity-70" />
               </button>
@@ -149,7 +194,7 @@ function CreateRecipe() {
           ))}
 
           <button
-            onClick={(e) => handleAddIngredient(e)}
+            onClick={(e) => handleAddInput(e, "ingredients")}
             className="flex p-4 text-[#39008f] transition hover:opacity-70"
           >
             <MdOutlineAddBox className="text-xl inline-block mr-3" />
@@ -157,26 +202,6 @@ function CreateRecipe() {
           </button>
         </div>
         <div className="mb-4 flex">
-          <div className="mr-3">
-            <label
-              htmlFor="calories"
-              className="block text-label font-bold text-lg mb-2"
-            >
-              Calories
-            </label>
-            <input
-              min={1}
-              type="number"
-              id="calories"
-              name="calories"
-              placeholder="Calories"
-              className="input-base"
-              value={calories}
-              onChange={onChange}
-              step=".01"
-              required
-            />
-          </div>
           {nutritions.map((item, idx) => (
             <div className="mr-3" key={idx}>
               <label
@@ -200,23 +225,94 @@ function CreateRecipe() {
             </div>
           ))}
         </div>
-        <div className="mb-4">
-          <label
-            htmlFor="title"
-            className="block text-label font-bold text-lg mb-2"
+        <div>
+          <h3 className="block text-label font-bold text-lg mb-2">
+            Instructions
+          </h3>
+          {instructions.map((item, idx) => (
+            <div className="flex items-center" key={idx}>
+              <button
+                className="p-4"
+                onClick={(e) => handleRemoveInput(idx, e, "instructions")}
+              >
+                <BsTrash className="text-[#39008f] text-xl transition hover:opacity-70" />
+              </button>
+              <input
+                type="text"
+                id={idx}
+                name="instructions"
+                value={item}
+                onChange={(e) => handleArrayInputChange(e, idx)}
+                placeholder="New Instruction"
+                className="ml-2 input-base"
+                required
+              />
+            </div>
+          ))}
+
+          <button
+            onClick={(e) => handleAddInput(e, "instructions")}
+            className="flex p-4 text-[#39008f] transition hover:opacity-70"
           >
-            Difficulty
-          </label>
-          <select
-            name="difficulty"
-            id="difficulty"
-            className="input-base"
-            onChange={onChange}
-          >
-            <option value="Easy">Easy</option>
-            <option value="Intermediate">Intermediate</option>
-            <option value="Hard">Hard</option>
-          </select>
+            <MdOutlineAddBox className="text-xl inline-block mr-3" />
+            Add New Instruction
+          </button>
+        </div>
+        <div className="flex mb-4 gap-3">
+          <div>
+            <label
+              htmlFor="yields"
+              className="block text-label font-bold text-lg mb-2"
+            >
+              Yields
+            </label>
+            <input
+              type="text"
+              name="yields"
+              id="yields"
+              placeholder="6 Servings"
+              className="input-base"
+              value={yields}
+              onChange={onChange}
+              required
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="yields"
+              className="block text-label font-bold text-lg mb-2"
+            >
+              Category
+            </label>
+            <input
+              type="text"
+              name="category"
+              id="category"
+              placeholder="Fish"
+              className="input-base"
+              value={category}
+              onChange={onChange}
+              required
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="time"
+              className="block text-label font-bold text-lg mb-2"
+            >
+              Time
+            </label>
+            <input
+              type="number"
+              name="time"
+              id="time"
+              placeholder="Min"
+              className="input-base"
+              value={time}
+              onChange={onChange}
+              required
+            />
+          </div>
         </div>
         <div className="mb-4">
           <label

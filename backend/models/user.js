@@ -51,9 +51,14 @@ const userSchema = new Schema({
     profilePhoto: {
       type: String,
       default:
-        "https://firebasestorage.googleapis.com/v0/b/foody-2be15.appspot.com/o/images%2FdefaultProfile.png?alt=media&token=0508ac11-45bd-4c61-b30f-c0a8e67be3bf",
+        "https://res.cloudinary.com/ddf5fylyn/image/upload/v1656093738/foodie/profile-photos/images_2FdefaultProfile_t0mkzs.png",
     },
   },
+  role: {
+    type: String,
+    enum: ["user", "admin"],
+    default: "user"
+  }
 })
 
 userSchema.pre("save", function (next) {

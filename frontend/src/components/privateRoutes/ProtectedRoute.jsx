@@ -1,6 +1,6 @@
-import { useAuth } from "../context/authContext"
+import { useAuth } from "../../context/authContext"
 import { Navigate } from "react-router-dom"
-import Spinner from "./layout/Spinner"
+import Spinner from "../layout/Spinner"
 import { toast } from "react-toastify"
 import { Outlet } from "react-router-dom"
 function ProtectedRoute() {

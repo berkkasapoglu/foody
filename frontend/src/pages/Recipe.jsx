@@ -4,27 +4,31 @@ import { useAuth } from "../context/authContext"
 import { useFetch } from "../hooks/useFetch"
 import { useUser } from "../hooks/useUser"
 import { toast } from "react-toastify"
+import { BiTimer } from "react-icons/bi"
+import { GiKnifeFork } from "react-icons/gi"
 import Spinner from "../components/layout/Spinner"
+import MetaDecorator from "../components/MetaDecorator"
+import metadata from "../metadata.json"
 
 function Recipe() {
   const [isFavorite, setIsFavorite] = useState(false)
   const { auth } = useAuth()
-  const { recipeId } = useParams()
+  const { slug } = useParams()
   const { data: user } = useUser()
-  const { data: recipe, loading } = useFetch(`/api/recipes/${recipeId}`)
-
+  const { data: recipe, loading } = useFetch(`/api/recipes/${slug}`)
+  const [isRecipeRemoving, setIsRecipeRemoving] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
     if (user) {
       setIsFavorite(
-        user.favorites.some((favorite) => favorite._id === recipeId)
+        user.favorites.some((favorite) => favorite.slug === slug)
       )
     }
-  }, [user, recipeId])
+  }, [user, slug])
 
   const addToFavorites = async () => {
-    const res = await fetch(`/api/users/favorites/${recipeId}`, {
+    const res = await fetch(`/api/users/favorites/${slug}`, {
       method: "POST",
       headers: {
         Authorization: "Bearer " + auth.token,
@@ -40,7 +44,7 @@ function Recipe() {
   }
 
   const removeFromFavorites = async () => {
-    const res = await fetch(`/api/users/favorites/${recipeId}`, {
+    const res = await fetch(`/api/users/favorites/${slug}`, {
       method: "DELETE",
       headers: {
         Authorization: "Bearer " + auth.token,
@@ -56,7 +60,8 @@ function Recipe() {
   }
 
   const deleteMyRecipe = async () => {
-    const res = await fetch(`/api/recipes/${recipeId}`, {
+    setIsRecipeRemoving(true)
+    const res = await fetch(`/api/recipes/${slug}`, {
       method: "DELETE",
       headers: {
         Authorization: "Bearer " + auth.token,
@@ -69,6 +74,7 @@ function Recipe() {
     } else {
       toast.error(result.message)
     }
+    setIsRecipeRemoving(false)
   }
 
   return loading ? (
@@ -76,71 +82,75 @@ function Recipe() {
   ) : (
     recipe && (
       <>
-        <main>
+        <MetaDecorator
+          title={recipe.title}
+          description={recipe.description}
+          image={recipe.image.lowQuality}
+          url={metadata.sitename + `/recipes/${recipe.slug}`}
+        />
+        <main className="text-lg">
           <div className="lg:flex lg:items-center">
             <img
-              src={recipe.image}
+              src={recipe.image && recipe.image.lowQuality}
               alt="recipe"
-              className="w-[350px] mr-10 rounded-xl"
+              className="w-[350px] mr-10 mb-6 lg:mb-0 rounded-xl"
             />
             <div className="pb-3 border-b-2 border-b-primary">
-              <p className="text-primary text-sm font-bold">
-                Chef: {recipe.source}
-              </p>
               <h1 className="text-4xl pb-3">{recipe.title}</h1>
             </div>
           </div>
-          <div>
-            {recipe.labels.dietLabels.map((item, idx) => (
-              <span
-                key={idx}
-                className="inline-block mr-3 mt-3 bg-green-200 rounded-md px-3 text-green-800 font-bold text-sm"
-              >
-                {item}
-              </span>
-            ))}
-          </div>
-          <div>
-            {recipe.labels.healthLabels.map((item, idx) => (
-              <span
-                key={idx}
-                className="inline-block mr-3 mt-3 bg-blue-200 rounded-md px-3 text-blue-800 font-bold text-sm"
-              >
-                {item}
-              </span>
-            ))}
-          </div>
-          <div className="mt-5">
-            <h3 className="font-bold">Nutrition per serving</h3>
-            <div className=" text-center mr-5 p-1 bg-stone-300 inline-block mt-2 rounded-lg">
-              <p className="px-3">Calories</p>
-              <p className="bg-body px-3 font-bold">{recipe.calories} kcal</p>
-            </div>
+          <p className="mt-6 font-bold">{recipe.description}</p>
+          <div className="mt-5 mb-8">
+            <h3 className="font-bold text-lg">Nutritions per serving</h3>
             {recipe.nutritions.map((item, idx) => (
               <div
                 key={idx}
-                className=" textpF-center mr-5 p-1 bg-stone-300 inline-block mt-2 rounded-lg"
+                className=" textpF-center mr-5 p-1 bg-primary-300/50 inline-block mt-2 rounded-lg"
               >
                 <p className="px-3">{item.label}</p>
-                <p className="bg-body px-3 font-bold">{item.total} g</p>
+                <p className="bg-body px-3 font-bold rounded-md">
+                  {item.total} {item.unit}
+                </p>
               </div>
             ))}
           </div>
-          <div>
-            <h2 className="text-lg font-bold mt-5">Ingredients</h2>
-            <ul>
-              {recipe.ingredients.map((item, idx) => (
-                <li key={idx}>
-                  <input
-                    type="checkbox"
-                    id={`ingredient-${idx}`}
-                    className="accent-green-500 mr-2"
-                  />
-                  <label htmlFor={`ingredient-${idx}`}>{item}</label>
-                </li>
-              ))}
-            </ul>
+          <div className="flex flex-wrap mt-5 mb-2 gap-7">
+            <div>
+              <h2 className="text-lg font-bold">Ingredients</h2>
+              <ul>
+                {recipe.ingredients.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="p-4 border border-black/50 self-start order-first  lg:order-last">
+              <div className="font-bold flex items-center">
+                <GiKnifeFork className="text-[25px]" />
+                <p className="ml-1">
+                  Yield: <span className="font-normal">{recipe.yields}</span>
+                </p>
+              </div>
+              <div className="font-bold flex items-center">
+                <BiTimer className="text-[25px]" />
+                <p className="ml-1">
+                  Time: <span className="font-normal">{recipe.time} min</span>
+                </p>
+              </div>
+            </div>
           </div>
+          <ul className="mb-5">
+            <h2 className="text-lg font-bold mt-5">Directions</h2>
+            {recipe.instructions.split("\n").map((instruction, idx) => (
+              <li key={idx} className="mt-4">
+                <div className="flex items-center gap-6">
+                  <h3 className="font-mono inline-block font-bold font-direction text-3xl bg-primary-300/60 rounded-[100%] p-3">
+                    {idx + 1}
+                  </h3>
+                  <p className="">{instruction}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
           {isFavorite ? (
             <button
               onClick={removeFromFavorites}
@@ -156,13 +166,19 @@ function Recipe() {
               Add Favorites
             </button>
           )}
-          {user && recipe.owner === user._id && (
-            <button
-              onClick={deleteMyRecipe}
-              className="ml-4 mt-5 bg-yellow-500 py-2 px-5 rounded-lg font-bold transition-all hover:bg-yellow-600"
-            >
-              Delete Recipe
-            </button>
+          {isRecipeRemoving ? (
+            <Spinner place="absolute inline-block ml-14" />
+          ) : (
+            recipe.owner &&
+            user &&
+            recipe.owner._id === user._id && (
+              <button
+                onClick={deleteMyRecipe}
+                className="ml-4 mt-5 bg-yellow-500 py-2 px-5 rounded-lg font-bold transition-all hover:bg-yellow-600"
+              >
+                Delete Recipe
+              </button>
+            )
           )}
         </main>
       </>

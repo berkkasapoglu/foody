@@ -1,6 +1,7 @@
 const express = require("express")
 const router = express.Router({ mergeParams: true })
 const catchAsync = require("../utils/catchAsync")
+
 const {
   register,
   login,
@@ -11,17 +12,18 @@ const {
   removeFromPlanner,
   updatePersonalInformation,
 } = require("../controllers/user")
-const auth = require("../middlewares/auth")
+const { auth, validateUser } = require("../middlewares/auth")
+const { parseMultipartForm } = require("../middlewares/recipe")
 
 router
   .route("/")
-  .post(catchAsync(register))
-  .patch(auth, catchAsync(updatePersonalInformation))
+  .post(validateUser, catchAsync(register))
+  .patch(auth, parseMultipartForm, catchAsync(updatePersonalInformation))
 
 router.post("/sign-in", catchAsync(login))
 
 router
-  .route("/favorites/:recipeId")
+  .route("/favorites/:slug")
   .post(auth, catchAsync(addToFavorites))
   .delete(auth, catchAsync(removeFromFavorites))
 
@@ -30,7 +32,7 @@ router
   .post(auth, catchAsync(addToPlanner))
   .delete(auth, catchAsync(removeFromPlanner))
 
-router.post("/favorites/:recipeId", auth, catchAsync(addToFavorites))
+router.post("/favorites/:slug", auth, catchAsync(addToFavorites))
 
 router.get("/me", auth, getMe)
 

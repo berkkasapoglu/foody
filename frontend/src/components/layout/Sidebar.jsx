@@ -8,6 +8,7 @@ import { NavLink, Link } from "react-router-dom"
 import { useEffect, useRef } from "react"
 import { useAuth } from "../../context/authContext"
 import { useUser } from "../../hooks/useUser"
+
 const SidebarItems = [
   { name: "Recipes", icon: GiOpenBook, to: "/" },
   { name: "Favorites", icon: GiHearts, to: "/favorites" },
@@ -91,14 +92,16 @@ function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
           />
         ))}
       </div>
-      <div className="px-3 mb-5 text-center absolute bottom-0 w-full">
-        <Link
-          to="/recipes/new"
-          className="block mb-2 w-full py-2 px-5 bg-primary rounded-md text-body font-bold transition hover:bg-red-700"
-        >
-          Create Recipe
-        </Link>
-      </div>
+      {user && user.role === "admin" && (
+        <div className="px-3 mb-5 text-center absolute bottom-0 w-full">
+          <Link
+            to="/recipes/new"
+            className="block mb-2 w-full py-2 px-5 bg-primary rounded-md text-body font-bold transition hover:bg-red-700"
+          >
+            Create Recipe
+          </Link>
+        </div>
+      )}
     </nav>
   )
 }

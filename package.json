@@ -7,7 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "client": "npm start --prefix frontend",
     "server": "nodemon backend/app.js",
-    "dev": "concurrently \"npm run client\" \"npm run server\""
+    "dev": "concurrently \"npm run client\" \"npm run server\"",
+    "webpack:server": "nodemon --watch backend/build --exec node backend/build/bundle.js",
+    "webpack:build_server": "npm --prefix backend run webpack:build",
+    "build": "npm --prefix backend run webpack:build && npm --prefix frontend run build"
   },
   "repository": {
     "type": "git",

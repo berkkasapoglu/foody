@@ -8,7 +8,6 @@ import { useState, useEffect } from "react"
 import { useAuth } from "../context/authContext"
 import { useLocalStorage } from "../hooks/useLocalStorage"
 import { useSearchParams } from "react-router-dom"
-
 import moment from "moment"
 import {
   CircularProgressbarWithChildren,
@@ -16,6 +15,8 @@ import {
 } from "react-circular-progressbar"
 import "react-circular-progressbar/dist/styles.css"
 import { toast } from "react-toastify"
+import MetaDecorator from "../components/MetaDecorator"
+import metadata from "../metadata.json"
 
 function Favorites() {
   const [searchParams] = useSearchParams()
@@ -24,7 +25,6 @@ function Favorites() {
   const [favorites, setFavorites] = useState([])
   const [mealPlan, setMealPlan] = useLocalStorage("recipes", {})
   const [totalCalories, setTotalCalories] = useLocalStorage("totalCalories", 0)
-
   useEffect(() => {
     if (user) {
       const favoritesCopy = user.favorites.map((item) => ({
@@ -66,76 +66,83 @@ function Favorites() {
   }
 
   return (
-    <div className="flex flex-col justify-between gap-12 xl:flex-row">
-      <div className="flex-1">
-        <SortBar />
-        {loading ? (
-          <Spinner />
-        ) : (
-          favorites.map((favorite) => (
-            <FavoriteItem
-              favorite={favorite}
-              key={favorite._id}
-              setFavorites={setFavorites}
-              favorites={favorites}
-            />
-          ))
-        )}
-      </div>
-      <div className="basis-[28%]">
-        <h2 className="text-xl font-bold">Make your day</h2>
-        <p className="text-gray-400">{new Date().toDateString()}</p>
-        <h3 className="font-bold my-2">Breakfast</h3>
-        <DropContainer
-          favorites={favorites}
-          setTotalCalories={setTotalCalories}
-          totalCalories={totalCalories}
-          name="breakfast"
-          mealPlan={mealPlan}
-          setMealPlan={setMealPlan}
-          loading={loading}
-        />
-        <h3 className="font-bold my-2">Lunch</h3>
-        <DropContainer
-          favorites={favorites}
-          setTotalCalories={setTotalCalories}
-          totalCalories={totalCalories}
-          name="lunch"
-          mealPlan={mealPlan}
-          setMealPlan={setMealPlan}
-          loading={loading}
-        />
-        <h3 className="font-bold my-2">Dinner</h3>
-        <DropContainer
-          favorites={favorites}
-          setTotalCalories={setTotalCalories}
-          totalCalories={totalCalories}
-          name="dinner"
-          mealPlan={mealPlan}
-          setMealPlan={setMealPlan}
-          loading={loading}
-        />
-        <button onClick={addToPlan} className="btn mt-5 block ml-auto">
-          Add Recipes to Plan
-        </button>
-        <h3 className="text-xl font-bold mt-12 mb-4">Calorie Tracker</h3>
-        <div className="w-[200px] relative">
-          <CircularProgressbarWithChildren
-            value={totalCalories}
-            maxValue={2500}
-            styles={buildStyles({
-              textColor: "#ef4444",
-              pathColor: `rgba(219,53,41)`,
-            })}
-          >
-            <div className="font-bold text-primary text-center">
-              <p className="text-3xl">Kcal</p>
-              <h3 className="text-2xl text-black">{totalCalories}</h3>
-            </div>
-          </CircularProgressbarWithChildren>
+    <>
+      <MetaDecorator
+        title={`Foodie | Favorites`}
+        description={metadata.baseDescription}
+        url={metadata.sitename + "/favorites"}
+      />
+      <div className="flex flex-col justify-between gap-12 xl:flex-row">
+        <div className="flex-1">
+          <SortBar />
+          {loading ? (
+            <Spinner />
+          ) : (
+            favorites.map((favorite) => (
+              <FavoriteItem
+                favorite={favorite}
+                key={favorite._id}
+                setFavorites={setFavorites}
+                favorites={favorites}
+              />
+            ))
+          )}
+        </div>
+        <div className="basis-[28%]">
+          <h2 className="text-xl font-bold">Make your day</h2>
+          <p className="text-gray-400">{new Date().toDateString()}</p>
+          <h3 className="font-bold my-2">Breakfast</h3>
+          <DropContainer
+            favorites={favorites}
+            setTotalCalories={setTotalCalories}
+            totalCalories={totalCalories}
+            name="breakfast"
+            mealPlan={mealPlan}
+            setMealPlan={setMealPlan}
+            loading={loading}
+          />
+          <h3 className="font-bold my-2">Lunch</h3>
+          <DropContainer
+            favorites={favorites}
+            setTotalCalories={setTotalCalories}
+            totalCalories={totalCalories}
+            name="lunch"
+            mealPlan={mealPlan}
+            setMealPlan={setMealPlan}
+            loading={loading}
+          />
+          <h3 className="font-bold my-2">Dinner</h3>
+          <DropContainer
+            favorites={favorites}
+            setTotalCalories={setTotalCalories}
+            totalCalories={totalCalories}
+            name="dinner"
+            mealPlan={mealPlan}
+            setMealPlan={setMealPlan}
+            loading={loading}
+          />
+          <button onClick={addToPlan} className="btn mt-5 block ml-auto">
+            Add Recipes to Plan
+          </button>
+          <h3 className="text-xl font-bold mt-12 mb-4">Calorie Tracker</h3>
+          <div className="w-[200px] h-fit relative">
+            <CircularProgressbarWithChildren
+              value={totalCalories}
+              maxValue={2500}
+              styles={buildStyles({
+                textColor: "#ef4444",
+                pathColor: `rgba(219,53,41)`,
+              })}
+            >
+              <div className="font-bold text-primary text-center">
+                <p className="text-3xl">Kcal</p>
+                <h3 className="text-2xl text-black">{totalCalories}</h3>
+              </div>
+            </CircularProgressbarWithChildren>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 export default Favorites

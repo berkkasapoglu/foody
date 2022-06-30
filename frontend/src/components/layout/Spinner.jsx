@@ -1,7 +1,7 @@
 import spinner from "../../assets/spinner.gif"
-function Spinner() {
+function Spinner({ place }) {
   return (
-    <div className="flex justify-center">
+    <div className={place || `flex justify-center` }>
       <img src={spinner} alt="spinner" />
     </div>
   )

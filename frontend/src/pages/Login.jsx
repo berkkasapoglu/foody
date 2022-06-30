@@ -4,6 +4,8 @@ import { useState } from "react"
 import { login } from "../services/auth"
 import { useAuth } from "../context/authContext"
 import { toast } from "react-toastify"
+import MetaDecorator from "../components/MetaDecorator"
+import metadata from "../metadata.json"
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -39,41 +41,51 @@ function Login() {
   }
 
   return (
-    <div className="lg:w-[60%] mx-auto">
-      <h3 className="text-4xl font-bold mb-10">Welcome back</h3>
-      <form className=" bg-white p-10 rounded-xl shadow-md" onSubmit={onSubmit}>
-        <LoginLogo width={220} height={220} className="mx-auto" />
-        <label htmlFor="" className="font-bold">
-          Username
-        </label>
-        <input
-          type="text"
-          name="username"
-          className="input-base mb-5"
-          onChange={onChange}
-          required
-        />
-        <label htmlFor="" className="font-bold">
-          Password
-        </label>
-        <input
-          type="password"
-          name="password"
-          className="input-base"
-          onChange={onChange}
-          required
-        />
-        <div className="text-right mb-5">
-          <button className="btn text-sm mt-4">Sign in</button>
-        </div>
-        <Link to="/sign-up">
-          Don't you have an account?
-          <span className="font-bold hover:border-b hover:border-b-black ml-2">
-            Sign up
-          </span>
-        </Link>
-      </form>
-    </div>
+    <>
+      <MetaDecorator
+        title="Foodie | Sign In"
+        description="Sign in to your account."
+        url={metadata.sitename + "/sign-in"}
+      />
+      <div className="lg:w-[60%] mx-auto">
+        <h1 className="text-4xl font-bold mb-10">Welcome Back</h1>
+        <form
+          className=" bg-white p-10 rounded-xl shadow-md"
+          onSubmit={onSubmit}
+        >
+          <LoginLogo width={220} height={220} className="mx-auto" />
+          <label htmlFor="" className="font-bold">
+            Username
+          </label>
+          <input
+            type="text"
+            name="username"
+            className="input-base mb-5"
+            onChange={onChange}
+            required
+          />
+          <label htmlFor="" className="font-bold">
+            Password
+          </label>
+          <input
+            type="password"
+            name="password"
+            className="input-base"
+            onChange={onChange}
+            required
+          />
+          <div className="text-right mb-5">
+            <button className="btn text-sm mt-4">Sign in</button>
+          </div>
+          <Link to="/sign-up">
+            Don't you have an account?
+            <span className="font-bold hover:border-b hover:border-b-black ml-2">
+              Sign up
+            </span>
+          </Link>
+        </form>
+      </div>
+    </>
   )
 }
 export default Login

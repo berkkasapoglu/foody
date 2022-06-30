@@ -18,7 +18,7 @@ const moveBottom = (currentPosition) => {
   }
 }
 
-const moveTop = (currentPosition) => {    
+const moveTop = (currentPosition) => {
   if (currentPosition && currentPosition.y - 70 < 0) {
     window.scrollTo(window.scrollX, window.scrollY - 5)
   }
@@ -35,7 +35,6 @@ function FavoriteItem({
   favorites,
   style,
 }) {
-
   const { auth } = useAuth()
   const currentPosition = useDragLayer((monitor) => monitor.getClientOffset())
   // eslint-disable-next-line
@@ -52,11 +51,13 @@ function FavoriteItem({
     moveTop(currentPosition)
   }, [currentPosition])
 
-  const { title, calories, nutritions } = favorite
-  const [fat, carbs, protein] = nutritions
+  const { title, nutritions } = favorite
+  const [calories, fat, carbs, protein] = nutritions.filter((nutrition) =>
+    ["Calories", "Fat", "Carbohydrate", "Protein"].includes(nutrition.label)
+  )
 
   const removeFromFavorites = async () => {
-    const res = await fetch(`/api/users/favorites/${favorite._id}`, {
+    const res = await fetch(`/api/users/favorites/${favorite.slug}`, {
       method: "DELETE",
       headers: {
         Authorization: "Bearer " + auth.token,
@@ -70,7 +71,7 @@ function FavoriteItem({
       toast.error(result.message)
     }
   }
-  
+
   return (
     <div
       ref={drag}
@@ -81,7 +82,7 @@ function FavoriteItem({
     >
       <div className="flex mb-4">
         <img
-          src={favorite.image}
+          src={favorite.image && favorite.image.lowQuality}
           className={`rounded-lg ${
             dragged ? "w-[50px] h-[50px]" : "w-[75px] h-[75px]"
           }`}
@@ -92,7 +93,7 @@ function FavoriteItem({
           <div className={`text-${size} text-gray-500`}>
             <span className="pr-3 border-r-2 border-gray-300">
               <AiFillFire className="inline mr-1" />
-              {parseInt(calories) * favorite.count} kcal
+              {parseInt(calories.total) * favorite.count} kcal
             </span>
             <span className="px-3 border-r-2 border-gray-300">
               <GiWaterDrop className="inline mr-1" />
@@ -141,7 +142,7 @@ function FavoriteItem({
               className="cursor-pointer absolute top-0 right-0 translate-y-3 -translate-x-3 hover:text-primary"
             />
             <Link
-              to={`/recipes/${favorite._id}`}
+              to={`/recipes/${favorite.slug}`}
               className="rounded-md border-2 ml-4 py-2 px-4 font-bold border-gray-300 transition hover:border-red-400"
             >
               Info
