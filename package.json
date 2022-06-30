@@ -10,7 +10,7 @@
     "dev": "concurrently \"npm run client\" \"npm run server\"",
     "webpack:server": "nodemon --watch backend/build --exec node backend/build/bundle.js",
     "webpack:build_server": "npm --prefix backend run webpack:build",
-    "build": "npm --prefix backend run webpack:build && npm --prefix frontend run build"
+    "build": "npm --prefix frontend run build  && npm --prefix backend run webpack:build"
   },
   "repository": {
     "type": "git",
