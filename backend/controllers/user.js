@@ -183,7 +183,7 @@ const updatePersonalInformation = async (req, res, next) => {
   let image
   if (req.file) {
     image = await imageUpload(req.file, "foodie/profile-photos")
-    if (image) updatedFields["personalInformation.profilePhoto"] = image.url
+    if (image) updatedFields["personalInformation.profilePhoto"] = image.secure_url
     else
       return res.status(500).json({
         success: false,

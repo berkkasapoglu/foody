@@ -41,7 +41,7 @@ const createRecipe = async (req, res) => {
     if (image)
       recipe.image = {
         path: image.public_id,
-        url: image.url,
+        url: image.secure_url,
       }
     else
       return res.status(500).json({
