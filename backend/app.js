@@ -55,6 +55,7 @@ const ssr = (req, res, next) => {
     ${helmet.meta.toString()}
     ${helmet.script.toString()}`
     const html = `
+    <!DOCTYPE html>
     <html lang="en">
     <head>
       <link data-react-helmet="true" rel="icon" href="/logo.png" />
