@@ -13,12 +13,12 @@ function MetaDecorator({ title, description, image, url }) {
       <meta property="og:type" content="article" />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
-      <meta property="og:image" content={image ? image : metadata.sitename + "/meta-image.png"} />
+      <meta property="og:image" content={image ? image : metadata.sitename + "/meta-image.jpg"} />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:url" content={url} />
-      <meta name="twitter:image" content={image ? image : metadata.sitename + "/meta-image.png"} />
+      <meta name="twitter:image" content={image ? image : metadata.sitename + "/meta-image.jpg"} />
       <link rel="apple-touch-icon" href="/logo.png" />
     </Helmet>
   )
