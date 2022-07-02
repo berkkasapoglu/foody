@@ -6,9 +6,12 @@ function MetaDecorator({ title, description, image, url }) {
     <Helmet>
       <meta charset="utf-8" />
       <link rel="icon" href="/logo.png" />
+      <link rel="apple-touch-icon" href="/logo.png" />
       <meta name="viewport" content="width=device-width,initial-scale=1" />
       <meta name="theme-color" content="#000000" />
       <title>{title}</title>
+      <meta name="title" content={title} />
+      <meta name="description" content={description} />
       <meta property="og:url" content={url} />
       <meta property="og:type" content="article" />
       <meta property="og:title" content={title} />
@@ -19,7 +22,6 @@ function MetaDecorator({ title, description, image, url }) {
       <meta name="twitter:description" content={description} />
       <meta name="twitter:url" content={url} />
       <meta name="twitter:image" content={image ? image : metadata.sitename + "/meta-image.jpg"} />
-      <link rel="apple-touch-icon" href="/logo.png" />
     </Helmet>
   )
 }

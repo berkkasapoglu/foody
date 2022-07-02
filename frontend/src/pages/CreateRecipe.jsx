@@ -116,7 +116,7 @@ function CreateRecipe() {
     const result = await res.json()
     setLoading(false)
     if (result.success) {
-      navigate(`/recipes/${result.data._id}`)
+      navigate(`/recipes/${result.data.slug}`)
       toast.success(result.message)
     } else {
       toast.error(result.message)

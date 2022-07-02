@@ -76,8 +76,8 @@ function MealPlanner() {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const [selectedWeek, setSelectedWeek] = useState({
-    firstDay: new Date(today.setDate(today.getDate() - today.getDay() + 1)),
-    lastDay: new Date(today.setDate(today.getDate() - today.getDay() + 7)),
+    firstDay: new Date(today.setDate(today.getDate() - today.getDay())),
+    lastDay: new Date(today.setDate(today.getDate() - today.getDay() + 6)),
   })
   useEffect(() => {
     if (user && user.planner) {
@@ -111,7 +111,7 @@ function MealPlanner() {
     selected.setHours(0, 0, 0, 0)
     setSelectedDate(new Date(selected))
     const firstDayOfWeek = new Date(
-      selected.setDate(selected.getDate() - (selected.getDay() - 1))
+      selected.setDate(selected.getDate() - selected.getDay())
     )
 
     const lastDayOfWeek = new Date(
@@ -259,9 +259,9 @@ const calculateNeeds = (personalInformation) => {
     } else if (gender === "Female") {
       needs.calorie = (655.1 + 9.6 * weight + 1.9 * height - 4.7 * age) * 7
     }
-    needs.carb = parseInt(needs.calorie * 0.55 * 0.13) * 7
-    needs.fat = parseInt(needs.calorie * 0.3 * 0.13) * 7
-    needs.protein = parseInt(needs.calorie * 0.25 * 0.13) * 7
+    needs.carb = parseInt(needs.calorie * 0.50 * 0.23)
+    needs.fat = parseInt(needs.calorie * 0.25 * 0.12)
+    needs.protein = parseInt(needs.calorie * 0.25 * 0.23)
     return needs
   }
 }

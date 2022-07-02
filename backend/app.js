@@ -58,8 +58,6 @@ const ssr = (req, res, next) => {
     <!DOCTYPE html>
     <html lang="en">
     <head>
-      <link data-react-helmet="true" rel="icon" href="/logo.png" />
-      <link data-react-helmet="true" rel="apple-touch-icon" href="/logo.png" />
       ${metadata}
       ${cssLink}
       ${jsScript}

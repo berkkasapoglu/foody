@@ -12,7 +12,7 @@ function LineBar({ stat, max, barColor }) {
       />
       <div className="flex items-center w-[90%] absolute z-1 font-bold top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] text-primary text-center">
         <p className="text-xs md:text-sm text-black">
-          {stat} g / {max} kcal
+          {stat} / {max} g
         </p>
       </div>
     </div>
