@@ -12,13 +12,13 @@ const getStructuredNutrition = (nutrition) => {
 module.exports = metadataGenerator = (recipe) => {
   const url = `https://street-foodie.com/recipes/${recipe.slug}`
   return `
-    <title data-react-helmet="true">${recipe.title}</title>
+    <title data-react-helmet="true">${recipe.title} | Foodie</title>
     <meta data-react-helmet="true" charset="utf-8" />
     <meta data-react-helmet="true" name="viewport" content="width=device-width,initial-scale=1"/>
     <meta data-react-helmet="true" name="theme-color" content="#000000" />
     <link data-react-helmet="true" rel="icon" href="/logo.png" />
     <link data-react-helmet="true" rel="apple-touch-icon" href="/logo.png" />
-    <meta data-react-helmet="true" name="title" content="${recipe.title}" />
+    <meta data-react-helmet="true" name="title" content="${recipe.title} | Foodie" />
     <meta data-react-helmet="true" name="description" content="${recipe.description}" />
     <meta data-react-helmet="true" property="og:url" content="${url}" />
     <meta data-react-helmet="true" property="og:type" content="article" />

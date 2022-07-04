@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet"
 import metadata from "../metadata.json"
 
-function MetaDecorator({ title, description, image, url }) {
+function MetaDecorator({ title, description, image, url, metaTitle }) {
   return (
     <Helmet>
       <meta charset="utf-8" />
@@ -14,11 +14,11 @@ function MetaDecorator({ title, description, image, url }) {
       <meta name="description" content={description} />
       <meta property="og:url" content={url} />
       <meta property="og:type" content="article" />
-      <meta property="og:title" content={title} />
+      <meta property="og:title" content={metaTitle ? metaTitle : title} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={image ? image : metadata.sitename + "/meta-image.jpg"} />
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={title} />
+      <meta name="twitter:title" content={metaTitle ? metaTitle : title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:url" content={url} />
       <meta name="twitter:image" content={image ? image : metadata.sitename + "/meta-image.jpg"} />

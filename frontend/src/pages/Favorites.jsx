@@ -25,6 +25,7 @@ function Favorites() {
   const [favorites, setFavorites] = useState([])
   const [mealPlan, setMealPlan] = useLocalStorage("recipes", {})
   const [totalCalories, setTotalCalories] = useLocalStorage("totalCalories", 0)
+
   useEffect(() => {
     if (user) {
       const favoritesCopy = user.favorites.map((item) => ({

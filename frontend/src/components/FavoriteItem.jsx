@@ -86,7 +86,7 @@ function FavoriteItem({
           className={`rounded-lg ${
             dragged ? "w-[50px] h-[50px]" : "w-[75px] h-[75px]"
           }`}
-          alt="recipe"
+          alt={favorite.title}
         />
         <div className="ml-3">
           <h4 className={`font-bold text-${size}`}>{title}</h4>

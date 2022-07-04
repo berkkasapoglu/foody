@@ -83,7 +83,8 @@ function Recipe() {
     recipe && (
       <>
         <MetaDecorator
-          title={recipe.title}
+          title={`${recipe.title} | Foodie`}
+          metaTitle={recipe.title}
           description={recipe.description}
           image={recipe.image.lowQuality}
           url={metadata.sitename + `/recipes/${recipe.slug}`}
@@ -92,7 +93,7 @@ function Recipe() {
           <div className="lg:flex lg:items-center">
             <img
               src={recipe.image && recipe.image.lowQuality}
-              alt="recipe"
+              alt={recipe.title}
               className="w-[350px] mr-10 mb-6 lg:mb-0 rounded-xl"
             />
             <div className="pb-3 border-b-2 border-b-primary">

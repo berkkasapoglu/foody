@@ -1,6 +1,7 @@
 const AppError = require("../utils/AppError")
 const jwt = require("jsonwebtoken")
 const User = require("../models/user")
+const mongoose = require("mongoose")
 const { userSchema } = require("../validationSchemas")
 
 const auth = async (req, res, next) => {
@@ -11,14 +12,19 @@ const auth = async (req, res, next) => {
       token = auth.split(" ")[1]
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
       const { sort } = req.query
-      const sortQuery = generateSortQuery(sort)
-      req.user = await User.findById(decoded.id)
-        .select("-password")
-        .populate({
-          path: "favorites",
-          options: { sort: sortQuery },
+      if (sort) {
+        const aggregation = await User.aggregate(generateSortQuery(sort, decoded.id))
+        userData = (await User.populate(aggregation, {path: "planner.meals.meal"}))[0]
+        userData.favorites.map(favorite => {
+          favorite.image.lowQuality = favorite.image.url.replace("/upload", "/upload/q_30")
         })
-        .populate("planner.meals.meal")
+        req.user = userData
+      } else {
+        req.user = await User.findById(decoded.id)
+          .select("-password")
+          .populate("favorites")
+          .populate("planner.meals.meal")
+      }
       next()
     }
   } catch (e) {
@@ -42,14 +48,77 @@ validateUser = (req, res, next) => {
   next()
 }
 
-const generateSortQuery = (sort) => {
+const generateSortQuery = (sort, userId) => {
   let sortCategory, sortType
-  if (sort) {
-    const fields = sort.split("_")
-    sortCategory = fields[0]
-    sortType = fields[2] === "asc" ? "" : "-"
-  }
-  return sortType + sortCategory
+  const fields = sort.split("_")
+  sortCategory = fields[0].charAt(0).toUpperCase() + fields[0].slice(1)
+  sortType = fields[2] === "asc" ? 1 : -1
+  return [
+    {
+      '$match': {
+        '_id': mongoose.Types.ObjectId(userId)
+      }
+    }, {
+      '$lookup': {
+        'from': 'recipes',
+        'localField': 'favorites',
+        'foreignField': '_id',
+        'as': 'favorites'
+      }
+    }, {
+      '$unwind': {
+        'path': '$favorites'
+      }
+    }, {
+      '$unwind': {
+        'path': '$favorites.nutritions'
+      }
+    }, {
+      '$match': {
+        'favorites.nutritions.label': sortCategory
+      }
+    }, {
+      '$sort': {
+        'favorites.nutritions.total': sortType
+      }
+    }, {
+      '$lookup': {
+        'from': 'recipes',
+        'localField': 'favorites._id',
+        'foreignField': '_id',
+        'as': 'favorites'
+      }
+    }, {
+      '$group': {
+        '_id': '$_id',
+        'favorites': {
+          '$push': {
+            '$first': '$favorites'
+          }
+        },
+        'first': {
+          '$first': '$$ROOT'
+        }
+      }
+    }, {
+      '$replaceRoot': {
+        'newRoot': {
+          '$mergeObjects': [
+            '$first', {
+              'favorites': '$favorites'
+            }
+          ]
+        }
+      }
+    },
+    {
+      '$project': {
+        'password': 0
+      }
+    }
+  ]
+
+
 }
 
 module.exports = {
