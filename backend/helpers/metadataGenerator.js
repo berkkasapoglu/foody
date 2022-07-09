@@ -15,11 +15,11 @@ module.exports = metadataGenerator = (recipe) => {
     <title data-react-helmet="true">${recipe.title} | Foodie</title>
     <meta data-react-helmet="true" charset="utf-8" />
     <meta data-react-helmet="true" name="viewport" content="width=device-width,initial-scale=1"/>
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
     <meta data-react-helmet="true" name="title" content="${recipe.title} | Foodie" />
     <meta data-react-helmet="true" name="description" content="${recipe.description}" />
     <meta data-react-helmet="true" property="og:url" content="${url}" />
