@@ -1,6 +1,5 @@
 # Recipe Web App
 A fully functional mern stack web app for recipes, meal planning, and recipe sharing. Users can save recipes and then drag and drop saved recipes into a weekly meal plan. According to added recipes users can check the weekly summary that shows nutrition and calorie counts.
-### **[Live Demo](https://street-foodie.com/)**
 ## Features
  * Create and Delete Recipe.
  * Save recipe.
